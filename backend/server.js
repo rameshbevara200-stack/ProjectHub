@@ -30,36 +30,6 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Seed Teacher endpoint for convenient initial demo setup
-app.post('/api/seed-teacher', async (req, res) => {
-  try {
-    const Teacher = require('./models/Teacher');
-    const existing = await Teacher.findOne({ email: 'teacher@college.edu' });
-    if (existing) {
-      return res.json({
-        message: 'Teacher account already seeded.',
-        email: 'teacher@college.edu',
-        password: 'password123',
-      });
-    }
-
-    await Teacher.create({
-      name: 'Dr. Academic Supervisor',
-      email: 'teacher@college.edu',
-      password: 'password123',
-      department: 'Computer Science & Engineering',
-    });
-
-    res.json({
-      message: 'Demo teacher seeded successfully.',
-      email: 'teacher@college.edu',
-      password: 'password123',
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 // Email Diagnostic Test endpoint
 app.get('/api/test-email', async (req, res) => {
   const { verifySMTP, sendEmail } = require('./config/mailer');

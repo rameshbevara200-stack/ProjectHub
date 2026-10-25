@@ -92,7 +92,7 @@ ProjectHub/
     │   │   ├── Home.jsx          # Public showcase & filters
     │   │   ├── ProjectDetails.jsx# Project preview & scorecard
     │   │   ├── TeacherDashboard.jsx # 6-tab faculty management center
-    │   │   ├── TeacherLogin.jsx  # Faculty authentication & quick demo seed
+    │   │   ├── TeacherLogin.jsx  # Faculty authentication portal
     │   │   └── UploadProject.jsx # Team Lead verification & submission
     │   ├── services/
     │   │   └── api.js            # Axios client with JWT interceptor
@@ -166,7 +166,7 @@ ProjectHub/
 
 1. **Teacher Login**:
    * Go to `http://localhost:5173/teacher/login`.
-   * Click **"Auto-fill Demo Teacher Credentials"** (creates `teacher@college.edu` / `password123`) and log in.
+   * Enter your registered Faculty Email and Password to log in.
 2. **Setup Academic Hierarchy**:
    * In the Teacher Dashboard, switch to **"Academic Management"**.
    * Add a Year (e.g. `2024-2025`).

@@ -2,47 +2,54 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
-import { Shield, Lock, Mail, ArrowRight, AlertTriangle } from 'lucide-react';
 import api from '../services/api';
+import { Shield, Lock, Mail, User, Building, ArrowRight, AlertTriangle } from 'lucide-react';
 
 const TeacherLogin = () => {
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [department, setDepartment] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [seeding, setSeeding] = useState(false);
-  const [seedNotice, setSeedNotice] = useState('');
 
   const { loginTeacher } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     setError('');
 
-    const res = await loginTeacher(email.trim(), password);
-    setSubmitting(false);
-
-    if (res.success) {
-      navigate('/teacher/dashboard');
+    if (isRegistering) {
+      // Faculty Account Registration
+      try {
+        const res = await api.post('/auth/teacher/register', {
+          name: name.trim(),
+          email: email.trim(),
+          password,
+          department: department.trim() || 'Computer Science & Engineering',
+        });
+        const { token, ...userData } = res.data;
+        localStorage.setItem('teacherToken', token);
+        localStorage.setItem('teacherUser', JSON.stringify(userData));
+        navigate('/teacher/dashboard');
+      } catch (err) {
+        setError(err.response?.data?.message || 'Faculty registration failed');
+      } finally {
+        setSubmitting(false);
+      }
     } else {
-      setError(res.message);
-    }
-  };
+      // Faculty Login
+      const res = await loginTeacher(email.trim(), password);
+      setSubmitting(false);
 
-  const handleQuickSeed = async () => {
-    setSeeding(true);
-    setError('');
-    try {
-      const res = await api.post('/seed-teacher');
-      setEmail(res.data.email);
-      setPassword(res.data.password);
-      setSeedNotice('Loaded demo faculty credentials: ' + res.data.email);
-    } catch (err) {
-      setError('Could not auto-seed teacher: ' + (err.response?.data?.message || err.message));
-    } finally {
-      setSeeding(false);
+      if (res.success) {
+        navigate('/teacher/dashboard');
+      } else {
+        setError(res.message);
+      }
     }
   };
 
@@ -52,10 +59,12 @@ const TeacherLogin = () => {
         <div className="text-center space-y-3">
           <Logo size="lg" showText={false} className="justify-center mx-auto" />
           <h1 className="font-display text-2xl font-bold uppercase tracking-tight text-[#141719]">
-            Faculty Access
+            {isRegistering ? 'Faculty Registration' : 'Faculty Access'}
           </h1>
           <p className="text-xs text-[#697077] font-mono">
-            SECURE EVALUATION & ACADEMIC HIERARCHY CONTROLS
+            {isRegistering
+              ? 'CREATE AN AUTHORIZED FACULTY EVALUATOR ACCOUNT'
+              : 'SECURE EVALUATION & ACADEMIC HIERARCHY CONTROLS'}
           </p>
         </div>
 
@@ -66,13 +75,38 @@ const TeacherLogin = () => {
           </div>
         )}
 
-        {seedNotice && (
-          <div className="p-3 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono text-[#19323F]">
-            {seedNotice}
-          </div>
-        )}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {isRegistering && (
+            <>
+              <div>
+                <label className="block font-mono text-[11px] uppercase tracking-wider text-[#141719] mb-1 font-semibold">
+                  Faculty Full Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Prof. / Dr. Full Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-sans text-[#141719] placeholder-[#9AA1A9] focus:outline-hidden focus:border-[#141719]"
+                />
+              </div>
 
-        <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block font-mono text-[11px] uppercase tracking-wider text-[#141719] mb-1 font-semibold">
+                  Department / Faculty Domain
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Computer Science & Engineering"
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-sans text-[#141719] placeholder-[#9AA1A9] focus:outline-hidden focus:border-[#141719]"
+                />
+              </div>
+            </>
+          )}
+
           <div>
             <label className="block font-mono text-[11px] uppercase tracking-wider text-[#141719] mb-1 font-semibold">
               Faculty Email
@@ -106,20 +140,30 @@ const TeacherLogin = () => {
             disabled={submitting}
             className="w-full finisterre-btn text-xs justify-center py-3"
           >
-            <span>{submitting ? 'Verifying Faculty Credentials...' : 'Authenticate Faculty'}</span>
+            <span>
+              {submitting
+                ? 'Processing...'
+                : isRegistering
+                ? 'Register Faculty Account'
+                : 'Authenticate Faculty'}
+            </span>
             <ArrowRight className="w-3.5 h-3.5 ml-2" />
           </button>
         </form>
 
-        {/* Demo Seed Helper */}
+        {/* Toggle between Login and Registration */}
         <div className="pt-4 border-t border-[#E2DFD7] text-center">
           <button
             type="button"
-            onClick={handleQuickSeed}
-            disabled={seeding}
+            onClick={() => {
+              setIsRegistering(!isRegistering);
+              setError('');
+            }}
             className="text-xs font-mono tracking-wider uppercase text-[#C85A32] hover:underline"
           >
-            {seeding ? 'Generating Demo Faculty...' : 'Autofill Demo Faculty Credentials'}
+            {isRegistering
+              ? '← Already have an account? Sign In'
+              : 'New Faculty? Create an Evaluator Account →'}
           </button>
         </div>
       </div>
