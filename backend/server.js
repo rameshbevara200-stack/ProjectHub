@@ -22,6 +22,14 @@ app.use('/api/academic', require('./routes/academicRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
 
 // Health check
+app.get('/', (req, res) => {
+  res.json({
+    status: 'online',
+    message: 'College Project Hub Backend API is running',
+    health: '/api/health',
+  });
+});
+
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'online',

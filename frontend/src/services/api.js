@@ -1,7 +1,14 @@
 import axios from 'axios';
 
+// Normalize base URL to ensure it always targets the correct /api path
+let rawBaseURL = import.meta.env.VITE_API_URL || '/api';
+rawBaseURL = rawBaseURL.trim().replace(/\/+$/, ''); // Remove trailing slashes
+if (rawBaseURL.startsWith('http') && !rawBaseURL.endsWith('/api')) {
+  rawBaseURL = `${rawBaseURL}/api`;
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: rawBaseURL,
 });
 
 // Request interceptor to attach JWT token (Teacher token prioritized if on teacher dashboard)
