@@ -47,12 +47,12 @@ const ProjectDetails = () => {
 
   if (error || !project) {
     return (
-      <div className="bg-white border border-[#E2DFD7] p-12 text-center max-w-lg mx-auto">
+      <div className="bg-white border border-[#E2DFD7] p-8 sm:p-12 text-center max-w-lg mx-auto">
         <h3 className="font-display font-bold text-lg text-[#C85A32] uppercase">Specification Not Found</h3>
         <p className="text-xs text-[#697077] mt-2">{error || 'This project record does not exist or has been removed.'}</p>
         <Link
           to="/"
-          className="finisterre-btn mt-6 text-xs inline-flex items-center space-x-2"
+          className="finisterre-btn mt-6 text-xs inline-flex items-center space-x-2 w-full sm:w-auto justify-center"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Return to Showcase</span>
@@ -65,12 +65,12 @@ const ProjectDetails = () => {
   const isRated = project.status === 'rated' && evaluation;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8">
       {/* Editorial Breadcrumb */}
       <div>
         <Link
           to="/"
-          className="inline-flex items-center space-x-2 font-display text-xs font-bold uppercase tracking-wider text-[#697077] hover:text-[#141719] transition"
+          className="inline-flex items-center space-x-2 font-display text-xs font-bold uppercase tracking-wider text-[#697077] hover:text-[#141719] transition py-1"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Project Showcase</span>
@@ -78,57 +78,59 @@ const ProjectDetails = () => {
       </div>
 
       {/* Main Specification Card */}
-      <div className="bg-white border border-[#E2DFD7]">
+      <div className="bg-white border border-[#E2DFD7] overflow-hidden">
         {/* Specification Header (Dark Slate/Ocean) */}
-        <div className="bg-[#19323F] p-8 sm:p-12 text-white border-b border-[#141719]">
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            <span className="font-mono text-xs uppercase tracking-wider bg-[#141719] text-[#EFECE6] px-3 py-1 border border-white/10">
+        <div className="bg-[#19323F] p-5 sm:p-8 lg:p-12 text-white border-b border-[#141719]">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
+            <span className="font-mono text-[10px] sm:text-xs uppercase tracking-wider bg-[#141719] text-[#EFECE6] px-2.5 sm:px-3 py-1 border border-white/10">
               {yearId?.name || 'Cohort'}
             </span>
-            <span className="font-mono text-xs uppercase tracking-wider bg-white/10 text-white px-3 py-1">
+            <span className="font-mono text-[10px] sm:text-xs uppercase tracking-wider bg-white/10 text-white px-2.5 sm:px-3 py-1">
               SECTION {sectionId?.name || 'N/A'}
             </span>
             {isRated ? (
-              <span className="font-mono text-xs uppercase tracking-wider bg-[#C85A32] text-white px-3 py-1 font-bold">
+              <span className="font-mono text-[10px] sm:text-xs uppercase tracking-wider bg-[#C85A32] text-white px-2.5 sm:px-3 py-1 font-bold">
                 EVALUATION SCORE: {evaluation.totalScore} / 40
               </span>
             ) : (
-              <span className="font-mono text-xs uppercase tracking-wider bg-[#2C4C5E] text-[#D4D8DD] px-3 py-1">
+              <span className="font-mono text-[10px] sm:text-xs uppercase tracking-wider bg-[#2C4C5E] text-[#D4D8DD] px-2.5 sm:px-3 py-1">
                 AWAITING FACULTY EVALUATION
               </span>
             )}
           </div>
 
-          <h1 className="font-display text-2xl sm:text-4xl font-bold uppercase tracking-tight text-white leading-tight">
+          <h1 className="font-display text-xl sm:text-3xl lg:text-4xl font-bold uppercase tracking-tight text-white leading-tight">
             {project.title}
           </h1>
 
-          <div className="mt-6 pt-6 border-t border-white/10 flex flex-wrap items-center gap-6 text-xs font-mono text-[#D4D8DD]">
+          <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-white/10 flex flex-wrap items-center gap-4 sm:gap-6 text-xs font-mono text-[#D4D8DD]">
             <div>
-              <span className="text-white/50 block">TEAM:</span>
+              <span className="text-white/50 text-[10px] sm:text-xs block">TEAM:</span>
               <span className="text-white font-bold text-sm">{teamId?.teamName}</span>
             </div>
             <div>
-              <span className="text-white/50 block">TEAM LEAD:</span>
-              <span className="text-white font-semibold">{teamId?.teamLead?.name} ({teamId?.teamLead?.email})</span>
+              <span className="text-white/50 text-[10px] sm:text-xs block">TEAM LEAD:</span>
+              <span className="text-white font-semibold text-xs sm:text-sm">
+                {teamId?.teamLead?.name} ({teamId?.teamLead?.email})
+              </span>
             </div>
             <div>
-              <span className="text-white/50 block">CATALOGUE ID:</span>
+              <span className="text-white/50 text-[10px] sm:text-xs block">CATALOGUE ID:</span>
               <span className="text-white/80">{project._id.slice(-8).toUpperCase()}</span>
             </div>
           </div>
         </div>
 
         {/* Specification Body */}
-        <div className="p-8 sm:p-12 grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="p-5 sm:p-8 lg:p-12 grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10">
           {/* Main Column */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
             {/* Abstract */}
             <div>
               <h2 className="font-display text-xs font-bold uppercase tracking-widest text-[#141719] mb-3 pb-2 border-b border-[#E2DFD7]">
                 01. Technical Abstract & Problem Statement
               </h2>
-              <p className="text-sm text-[#484F56] leading-relaxed whitespace-pre-line font-light">
+              <p className="text-xs sm:text-sm text-[#484F56] leading-relaxed whitespace-pre-line font-light">
                 {project.abstract}
               </p>
             </div>
@@ -143,7 +145,7 @@ const ProjectDetails = () => {
                   {project.technologies.map((tech, idx) => (
                     <span
                       key={idx}
-                      className="font-mono text-xs uppercase tracking-wider bg-[#F8F7F4] text-[#141719] border border-[#E2DFD7] px-3 py-1 font-semibold"
+                      className="font-mono text-[11px] sm:text-xs uppercase tracking-wider bg-[#F8F7F4] text-[#141719] border border-[#E2DFD7] px-3 py-1 font-semibold"
                     >
                       {tech}
                     </span>
@@ -163,18 +165,18 @@ const ProjectDetails = () => {
                     href={project.repoUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="p-4 border border-[#E2DFD7] hover:border-[#141719] bg-[#F8F7F4] flex items-center justify-between group transition"
+                    className="p-3.5 sm:p-4 border border-[#E2DFD7] hover:border-[#141719] bg-[#F8F7F4] flex items-center justify-between group transition"
                   >
-                    <div className="flex items-center space-x-2">
-                      <Github className="w-5 h-5 text-[#141719]" />
-                      <div className="text-left">
-                        <span className="font-display text-xs font-bold uppercase block text-[#141719]">
+                    <div className="flex items-center space-x-2.5 min-w-0">
+                      <Github className="w-5 h-5 text-[#141719] shrink-0" />
+                      <div className="text-left min-w-0">
+                        <span className="font-display text-xs font-bold uppercase block text-[#141719] truncate">
                           GitHub Repository
                         </span>
                         <span className="font-mono text-[10px] text-[#697077]">View Source Code</span>
                       </div>
                     </div>
-                    <ExternalLink className="w-4 h-4 text-[#697077] group-hover:text-[#141719]" />
+                    <ExternalLink className="w-4 h-4 text-[#697077] group-hover:text-[#141719] shrink-0 ml-2" />
                   </a>
                 )}
 
@@ -183,18 +185,18 @@ const ProjectDetails = () => {
                     href={project.liveDemoUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="p-4 border border-[#C85A32] bg-[#C85A32]/5 flex items-center justify-between group transition"
+                    className="p-3.5 sm:p-4 border border-[#C85A32] bg-[#C85A32]/5 flex items-center justify-between group transition"
                   >
-                    <div className="flex items-center space-x-2">
-                      <ExternalLink className="w-5 h-5 text-[#C85A32]" />
-                      <div className="text-left">
-                        <span className="font-display text-xs font-bold uppercase block text-[#C85A32]">
+                    <div className="flex items-center space-x-2.5 min-w-0">
+                      <ExternalLink className="w-5 h-5 text-[#C85A32] shrink-0" />
+                      <div className="text-left min-w-0">
+                        <span className="font-display text-xs font-bold uppercase block text-[#C85A32] truncate">
                           Live Demonstration
                         </span>
                         <span className="font-mono text-[10px] text-[#C85A32]">Interactive Prototype</span>
                       </div>
                     </div>
-                    <ExternalLink className="w-4 h-4 text-[#C85A32]" />
+                    <ExternalLink className="w-4 h-4 text-[#C85A32] shrink-0 ml-2" />
                   </a>
                 )}
 
@@ -203,18 +205,18 @@ const ProjectDetails = () => {
                     href={project.projectFileUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="p-4 border border-[#E2DFD7] hover:border-[#141719] bg-[#F8F7F4] flex items-center justify-between group transition sm:col-span-2"
+                    className="p-3.5 sm:p-4 border border-[#E2DFD7] hover:border-[#141719] bg-[#F8F7F4] flex items-center justify-between group transition sm:col-span-2"
                   >
-                    <div className="flex items-center space-x-2">
-                      <FileText className="w-5 h-5 text-[#141719]" />
-                      <div className="text-left">
-                        <span className="font-display text-xs font-bold uppercase block text-[#141719]">
+                    <div className="flex items-center space-x-2.5 min-w-0">
+                      <FileText className="w-5 h-5 text-[#141719] shrink-0" />
+                      <div className="text-left min-w-0">
+                        <span className="font-display text-xs font-bold uppercase block text-[#141719] truncate">
                           Documentation & Technical Whitepaper
                         </span>
                         <span className="font-mono text-[10px] text-[#697077]">Cloud Document Attachment</span>
                       </div>
                     </div>
-                    <ExternalLink className="w-4 h-4 text-[#697077] group-hover:text-[#141719]" />
+                    <ExternalLink className="w-4 h-4 text-[#697077] group-hover:text-[#141719] shrink-0 ml-2" />
                   </a>
                 )}
               </div>
@@ -222,15 +224,15 @@ const ProjectDetails = () => {
           </div>
 
           {/* Sidebar Column: Team Roster & Scorecard */}
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Team Roster */}
-            <div className="border border-[#E2DFD7] p-5 bg-[#F8F7F4]">
+            <div className="border border-[#E2DFD7] p-4 sm:p-5 bg-[#F8F7F4]">
               <h3 className="font-display text-xs font-bold uppercase tracking-widest text-[#141719] mb-4 flex items-center space-x-2">
                 <Users className="w-4 h-4 text-[#C85A32]" />
                 <span>Team Roster</span>
               </h3>
 
-              <div className="space-y-3">
+              <div className="space-y-2.5 sm:space-y-3">
                 {/* Team Lead */}
                 <div className="p-3 bg-white border border-[#E2DFD7]">
                   <div className="flex items-center justify-between">
@@ -241,7 +243,7 @@ const ProjectDetails = () => {
                       LEAD
                     </span>
                   </div>
-                  <div className="font-mono text-[11px] text-[#697077] mt-1">
+                  <div className="font-mono text-[11px] text-[#697077] mt-1 break-all">
                     {teamId?.teamLead?.email}
                   </div>
                 </div>
@@ -262,7 +264,7 @@ const ProjectDetails = () => {
 
             {/* Faculty Evaluation Scorecard */}
             {isRated && (
-              <div className="border border-[#141719] bg-[#141719] text-white p-5 space-y-4">
+              <div className="border border-[#141719] bg-[#141719] text-white p-4 sm:p-5 space-y-4">
                 <div className="flex items-center justify-between border-b border-[#2C3238] pb-3">
                   <h3 className="font-display text-xs font-bold uppercase tracking-widest text-[#EFECE6] flex items-center space-x-1.5">
                     <Award className="w-4 h-4 text-[#C85A32]" />
@@ -273,7 +275,7 @@ const ProjectDetails = () => {
                   </span>
                 </div>
 
-                <div className="space-y-2.5 text-xs font-mono">
+                <div className="space-y-2 text-xs font-mono">
                   <div className="flex justify-between items-center bg-[#1F252A] p-2 border border-[#2C3238]">
                     <span className="text-[#9AA1A9]">Tech Approach:</span>
                     <span className="font-bold text-white">{evaluation.technicalApproach} / 10</span>

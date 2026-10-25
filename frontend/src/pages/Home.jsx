@@ -57,35 +57,35 @@ const Home = () => {
   }, [selectedYear, selectedSection, searchQuery]);
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-8 sm:space-y-12">
       {/* Editorial Hero Banner (Finisterre Cold-Water Maritime Style) */}
-      <section className="relative bg-[#19323F] text-white p-8 sm:p-16 lg:p-20 overflow-hidden border border-[#141719]">
+      <section className="relative bg-[#19323F] text-white p-5 sm:p-12 lg:p-20 overflow-hidden border border-[#141719]">
         {/* Subtle grid contour background */}
         <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px]"></div>
 
-        <div className="relative z-10 max-w-3xl space-y-6">
-          <div className="flex items-center space-x-3 text-xs font-mono tracking-widest text-[#EFECE6]/80 uppercase">
-            <span className="w-2 h-2 bg-[#C85A32]"></span>
-            <span>ACADEMIC ARCHIVE • CAPSTONE RESEARCH & ENGINEERING</span>
+        <div className="relative z-10 max-w-3xl space-y-4 sm:space-y-6">
+          <div className="flex items-center space-x-2 sm:space-x-3 text-[10px] sm:text-xs font-mono tracking-widest text-[#EFECE6]/80 uppercase">
+            <span className="w-2 h-2 bg-[#C85A32] shrink-0"></span>
+            <span className="truncate">ACADEMIC ARCHIVE • CAPSTONE RESEARCH & ENGINEERING</span>
           </div>
 
-          <h1 className="font-display text-4xl sm:text-6xl font-bold tracking-tight leading-[1.08] uppercase text-[#F8F7F4]">
+          <h1 className="font-display text-2xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.12] uppercase text-[#F8F7F4]">
             Engineered with Purpose. <br />
             <span className="text-[#C85A32]">Built for Resilience.</span>
           </h1>
 
-          <p className="text-sm sm:text-base text-[#D4D8DD] font-sans leading-relaxed max-w-2xl font-light">
+          <p className="text-xs sm:text-base text-[#D4D8DD] font-sans leading-relaxed max-w-2xl font-light">
             A centralized digital commons combining all student projects across disciplines. Explore validated technical architectures, innovative prototypes, and capstone breakthroughs evaluated by faculty.
           </p>
 
-          <div className="pt-4 flex flex-wrap gap-4 items-center">
-            <a href="#showcase" className="finisterre-btn-rust">
+          <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-stretch sm:items-center">
+            <a href="#showcase" className="finisterre-btn-rust text-center justify-center">
               Explore Repository
             </a>
-            <Link to="/register" className="finisterre-btn-outline !text-white !border-white hover:!bg-white hover:!text-[#141719]">
+            <Link to="/register" className="finisterre-btn-outline !text-white !border-white hover:!bg-white hover:!text-[#141719] text-center justify-center">
               Register Your Team
             </Link>
-            <Link to="/upload" className="text-xs font-mono uppercase tracking-wider text-[#D4D8DD] hover:text-white underline ml-1">
+            <Link to="/upload" className="text-xs font-mono uppercase tracking-wider text-[#D4D8DD] hover:text-white underline text-center sm:text-left py-2 sm:py-0 sm:ml-1">
               Submit Deliverables →
             </Link>
           </div>
@@ -99,10 +99,10 @@ const Home = () => {
       </section>
 
       {/* Filter & Search Bar (Finisterre Filter Drawer Style) */}
-      <section id="showcase" className="bg-white border border-[#E2DFD7] p-5 sm:p-6 shadow-2xs">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <section id="showcase" className="bg-white border border-[#E2DFD7] p-4 sm:p-6 shadow-2xs">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4">
           {/* Search Input */}
-          <div className="relative flex-1">
+          <div className="relative flex-1 w-full">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#697077]" />
             <input
               type="text"
@@ -114,7 +114,7 @@ const Home = () => {
           </div>
 
           {/* Academic Selectors */}
-          <div className="flex flex-wrap sm:flex-nowrap gap-3 items-center">
+          <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center w-full lg:w-auto">
             <div className="w-full sm:w-56">
               <select
                 value={selectedYear}
@@ -157,7 +157,7 @@ const Home = () => {
                   setSelectedSection('');
                   setSearchQuery('');
                 }}
-                className="text-[11px] font-mono tracking-wider uppercase text-[#C85A32] hover:underline px-2 whitespace-nowrap"
+                className="text-xs font-mono tracking-wider uppercase text-[#C85A32] hover:underline py-1.5 px-2 text-center whitespace-nowrap"
               >
                 Reset Filter
               </button>
@@ -166,7 +166,7 @@ const Home = () => {
         </div>
 
         {/* Counter Sub-bar */}
-        <div className="mt-4 pt-3 border-t border-[#EFECE6] flex items-center justify-between text-xs font-mono text-[#697077]">
+        <div className="mt-3 sm:mt-4 pt-3 border-t border-[#EFECE6] flex flex-wrap items-center justify-between gap-2 text-[11px] sm:text-xs font-mono text-[#697077]">
           <span>
             CATALOGUE: <strong>{projects.length}</strong> ENTRIES FOUND
           </span>
@@ -179,11 +179,11 @@ const Home = () => {
       {/* Projects Grid Section */}
       <section>
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {[1, 2, 3, 4, 5, 6].map((idx) => (
               <div
                 key={idx}
-                className="bg-white border border-[#E2DFD7] h-80 animate-pulse p-6 flex flex-col justify-between"
+                className="bg-white border border-[#E2DFD7] h-80 animate-pulse p-4 sm:p-6 flex flex-col justify-between"
               >
                 <div className="h-32 bg-[#EFECE6] mb-4"></div>
                 <div className="space-y-2">
@@ -195,7 +195,7 @@ const Home = () => {
             ))}
           </div>
         ) : projects.length === 0 ? (
-          <div className="bg-white border border-[#E2DFD7] p-16 text-center max-w-lg mx-auto space-y-4">
+          <div className="bg-white border border-[#E2DFD7] p-8 sm:p-16 text-center max-w-lg mx-auto space-y-4">
             <div className="w-12 h-12 bg-[#F8F7F4] border border-[#E2DFD7] flex items-center justify-center mx-auto text-[#697077]">
               <Compass className="w-6 h-6 stroke-[1.5]" />
             </div>
@@ -206,13 +206,13 @@ const Home = () => {
               We couldn't locate any projects matching your academic year or branch criteria. Try resetting filters or submit a new project.
             </p>
             <div className="pt-2">
-              <Link to="/upload" className="finisterre-btn text-xs">
+              <Link to="/upload" className="finisterre-btn text-xs w-full sm:w-auto">
                 Submit Project Now
               </Link>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {projects.map((project) => (
               <ProjectCard key={project._id} project={project} />
             ))}

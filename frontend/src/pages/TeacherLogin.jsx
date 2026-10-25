@@ -72,11 +72,11 @@ const TeacherLogin = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto py-12">
-      <div className="bg-white border border-[#E2DFD7] p-8 sm:p-10 shadow-2xs space-y-6">
-        <div className="text-center space-y-3">
+    <div className="max-w-md mx-auto py-6 sm:py-12 px-2 sm:px-0">
+      <div className="bg-white border border-[#E2DFD7] p-5 sm:p-8 lg:p-10 shadow-2xs space-y-5 sm:space-y-6">
+        <div className="text-center space-y-2.5 sm:space-y-3">
           <Logo size="lg" showText={false} className="justify-center mx-auto" />
-          <h1 className="font-display text-2xl font-bold uppercase tracking-tight text-[#141719]">
+          <h1 className="font-display text-xl sm:text-2xl font-bold uppercase tracking-tight text-[#141719]">
             {needsInitialSetup ? 'Initial Faculty Setup' : 'Faculty Access'}
           </h1>
           <p className="text-xs text-[#697077] font-mono">
@@ -93,7 +93,7 @@ const TeacherLogin = () => {
         )}
 
         {error && (
-          <div className="p-4 bg-[#C85A32]/10 border border-[#C85A32] flex items-center space-x-2 text-xs font-mono text-[#C85A32]">
+          <div className="p-3.5 bg-[#C85A32]/10 border border-[#C85A32] flex items-center space-x-2 text-xs font-mono text-[#C85A32]">
             <AlertTriangle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
@@ -162,7 +162,7 @@ const TeacherLogin = () => {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full finisterre-btn text-xs justify-center py-3"
+            className="w-full finisterre-btn text-xs justify-center py-3.5 flex items-center"
           >
             <span>
               {submitting
@@ -176,7 +176,7 @@ const TeacherLogin = () => {
         </form>
 
         <div className="pt-4 border-t border-[#E2DFD7] text-center">
-          <p className="text-[11px] text-[#697077] font-mono">
+          <p className="text-[11px] text-[#697077] font-mono leading-relaxed">
             New faculty evaluator accounts must be authorized and registered by existing faculty from inside the Faculty Portal.
           </p>
         </div>

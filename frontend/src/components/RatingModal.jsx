@@ -53,24 +53,25 @@ const RatingModal = ({ project, onClose, onRatingSubmitted }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white border border-[#141719] max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+      <div className="bg-white border border-[#141719] max-w-lg w-full p-5 sm:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto my-auto">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-[#697077] hover:text-[#141719] p-1 transition"
+          className="absolute top-4 right-4 text-[#697077] hover:text-[#141719] p-1.5 transition"
+          aria-label="Close evaluation modal"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="border-b border-[#E2DFD7] pb-4 mb-5">
+        <div className="border-b border-[#E2DFD7] pb-4 mb-4 sm:mb-5 pr-8">
           <div className="flex items-center space-x-2 text-[#C85A32] font-mono text-xs uppercase tracking-widest">
             <Award className="w-4 h-4" />
             <span>Faculty Rubric Evaluation</span>
           </div>
-          <h2 className="font-display text-xl font-bold uppercase tracking-tight text-[#141719] mt-1">
+          <h2 className="font-display text-lg sm:text-xl font-bold uppercase tracking-tight text-[#141719] mt-1 break-words">
             "{project.title}"
           </h2>
-          <p className="text-xs text-[#697077] font-mono mt-1">
+          <p className="text-xs text-[#697077] font-mono mt-1 break-all">
             TEAM: <strong>{project.teamId?.teamName}</strong> • LEAD: {project.teamId?.teamLead?.email}
           </p>
         </div>
@@ -82,7 +83,7 @@ const RatingModal = ({ project, onClose, onRatingSubmitted }) => {
         )}
 
         {success ? (
-          <div className="py-10 text-center space-y-3">
+          <div className="py-8 sm:py-10 text-center space-y-3">
             <CheckCircle2 className="w-12 h-12 text-[#C85A32] mx-auto" />
             <h3 className="font-display text-lg font-bold uppercase text-[#141719]">
               Evaluation Dispatched
@@ -106,7 +107,7 @@ const RatingModal = ({ project, onClose, onRatingSubmitted }) => {
                 step="1"
                 value={scores.technicalApproach}
                 onChange={(e) => handleScoreChange('technicalApproach', e.target.value)}
-                className="w-full h-1.5 bg-[#E2DFD7] appearance-none cursor-pointer accent-[#C85A32]"
+                className="w-full h-2 bg-[#E2DFD7] appearance-none cursor-pointer accent-[#C85A32]"
               />
             </div>
 
@@ -123,7 +124,7 @@ const RatingModal = ({ project, onClose, onRatingSubmitted }) => {
                 step="1"
                 value={scores.idea}
                 onChange={(e) => handleScoreChange('idea', e.target.value)}
-                className="w-full h-1.5 bg-[#E2DFD7] appearance-none cursor-pointer accent-[#C85A32]"
+                className="w-full h-2 bg-[#E2DFD7] appearance-none cursor-pointer accent-[#C85A32]"
               />
             </div>
 
@@ -140,7 +141,7 @@ const RatingModal = ({ project, onClose, onRatingSubmitted }) => {
                 step="1"
                 value={scores.designThinking}
                 onChange={(e) => handleScoreChange('designThinking', e.target.value)}
-                className="w-full h-1.5 bg-[#E2DFD7] appearance-none cursor-pointer accent-[#C85A32]"
+                className="w-full h-2 bg-[#E2DFD7] appearance-none cursor-pointer accent-[#C85A32]"
               />
             </div>
 
@@ -157,7 +158,7 @@ const RatingModal = ({ project, onClose, onRatingSubmitted }) => {
                 step="1"
                 value={scores.uiUx}
                 onChange={(e) => handleScoreChange('uiUx', e.target.value)}
-                className="w-full h-1.5 bg-[#E2DFD7] appearance-none cursor-pointer accent-[#C85A32]"
+                className="w-full h-2 bg-[#E2DFD7] appearance-none cursor-pointer accent-[#C85A32]"
               />
             </div>
 
@@ -182,19 +183,19 @@ const RatingModal = ({ project, onClose, onRatingSubmitted }) => {
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end space-x-3 pt-3">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2.5 sm:gap-3 pt-2">
               <button
                 type="button"
                 onClick={onClose}
                 disabled={submitting}
-                className="finisterre-btn-outline text-xs py-2 px-4"
+                className="finisterre-btn-outline text-xs py-2.5 px-4 justify-center"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="finisterre-btn-rust text-xs py-2 px-4"
+                className="finisterre-btn-rust text-xs py-2.5 px-4 justify-center flex items-center"
               >
                 <Send className="w-3.5 h-3.5 mr-1.5" />
                 <span>{submitting ? 'Recording Score...' : 'Submit & Email Score'}</span>

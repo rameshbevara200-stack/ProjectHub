@@ -77,44 +77,44 @@ const UploadProject = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-10">
+    <div className="max-w-3xl mx-auto space-y-6 sm:space-y-10">
       {/* Editorial Header */}
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center space-x-2 font-mono text-[11px] tracking-widest uppercase text-[#C85A32]">
+      <div className="text-center space-y-2.5 sm:space-y-3">
+        <div className="inline-flex items-center space-x-2 font-mono text-[10px] sm:text-[11px] tracking-widest uppercase text-[#C85A32]">
           <Compass className="w-3.5 h-3.5" />
           <span>CAPSTONE SUBMISSION PROTOCOL</span>
         </div>
-        <h1 className="font-display text-3xl sm:text-5xl font-bold uppercase tracking-tight text-[#141719]">
+        <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl font-bold uppercase tracking-tight text-[#141719]">
           Project Dispatch Portal
         </h1>
-        <p className="text-xs sm:text-sm text-[#697077] max-w-lg mx-auto font-light leading-relaxed">
+        <p className="text-xs sm:text-sm text-[#697077] max-w-lg mx-auto font-light leading-relaxed px-2">
           Authorized team leads may verify their credentials to submit the team’s final project and technical documentation. Submissions are strictly one-time only.
         </p>
       </div>
 
       {/* STEP 1: AUTHENTICATION / VERIFICATION FORM */}
       {!teamLeadData ? (
-        <div className="bg-white border border-[#E2DFD7] p-8 sm:p-10 max-w-md mx-auto shadow-2xs">
-          <div className="border-b border-[#E2DFD7] pb-4 mb-6 flex items-center space-x-3">
+        <div className="bg-white border border-[#E2DFD7] p-5 sm:p-8 lg:p-10 max-w-md mx-auto shadow-2xs">
+          <div className="border-b border-[#E2DFD7] pb-4 mb-5 flex items-center space-x-3">
             <Logo size="sm" showText={false} />
             <div>
               <h2 className="font-display text-sm uppercase tracking-wider font-bold text-[#141719]">
                 Step 01 / Team Lead Verification
               </h2>
               <p className="text-[11px] text-[#697077] font-mono">
-                Provide credentials dispatched by your faculty instructor.
+                Provide credentials registered by your team or faculty.
               </p>
             </div>
           </div>
 
           {authError && (
-            <div className="mb-6 p-4 bg-[#C85A32]/10 border border-[#C85A32] flex items-start space-x-2 text-xs font-mono text-[#C85A32]">
+            <div className="mb-5 p-3.5 bg-[#C85A32]/10 border border-[#C85A32] flex items-start space-x-2 text-xs font-mono text-[#C85A32]">
               <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
               <span className="font-bold">{authError}</span>
             </div>
           )}
 
-          <form onSubmit={handleVerify} className="space-y-5">
+          <form onSubmit={handleVerify} className="space-y-4">
             <div>
               <label className="block font-mono text-[11px] uppercase tracking-wider text-[#141719] mb-1 font-semibold">
                 Team Lead Email
@@ -128,13 +128,13 @@ const UploadProject = () => {
                 className="w-full px-3.5 py-2.5 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono text-[#141719] placeholder-[#9AA1A9] focus:outline-hidden focus:border-[#141719]"
               />
               <span className="text-[10px] text-[#9AA1A9] mt-1 block font-mono">
-                Must match the exact address registered by your faculty member.
+                Must match the address used during registration.
               </span>
             </div>
 
             <div>
               <label className="block font-mono text-[11px] uppercase tracking-wider text-[#141719] mb-1 font-semibold">
-                Generated Access Password
+                Password
               </label>
               <input
                 type="password"
@@ -149,20 +149,20 @@ const UploadProject = () => {
             <button
               type="submit"
               disabled={verifying}
-              className="w-full finisterre-btn text-xs justify-center"
+              className="w-full finisterre-btn text-xs justify-center py-3 flex items-center"
             >
               <span>{verifying ? 'Verifying Authorization...' : 'Authorize Submission'}</span>
               <ArrowRight className="w-3.5 h-3.5 ml-2" />
             </button>
           </form>
 
-          <div className="pt-6 mt-6 border-t border-[#E2DFD7] text-center space-y-3">
+          <div className="pt-5 mt-5 border-t border-[#E2DFD7] text-center space-y-2.5">
             <span className="text-xs text-[#697077] block font-mono">
-              New team? Haven't enrolled your capstone group yet?
+              New team? Haven't enrolled your group yet?
             </span>
             <Link
               to="/register"
-              className="finisterre-btn-rust text-xs w-full justify-center"
+              className="finisterre-btn-rust text-xs w-full justify-center flex items-center"
             >
               <span>Register New Student Team</span>
               <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
@@ -173,16 +173,16 @@ const UploadProject = () => {
         /* STEP 2: VERIFIED AUTHORIZATION STATE */
         <div className="space-y-6">
           {/* Active Authorization Header */}
-          <div className="bg-[#19323F] text-white p-5 sm:p-6 border border-[#141719] flex flex-wrap items-center justify-between gap-4">
+          <div className="bg-[#19323F] text-white p-4 sm:p-6 border border-[#141719] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-[#C85A32] flex items-center justify-center text-white">
+              <div className="w-10 h-10 bg-[#C85A32] flex items-center justify-center text-white shrink-0">
                 <ShieldCheck className="w-5 h-5" />
               </div>
-              <div>
-                <h3 className="font-display text-sm uppercase tracking-wider font-bold">
-                  Authorized Team Lead: {teamLeadData.teamLead?.name}
+              <div className="min-w-0">
+                <h3 className="font-display text-sm uppercase tracking-wider font-bold truncate">
+                  Authorized Lead: {teamLeadData.teamLead?.name}
                 </h3>
-                <p className="font-mono text-xs text-[#D4D8DD] mt-0.5">
+                <p className="font-mono text-xs text-[#D4D8DD] mt-0.5 truncate">
                   TEAM: <strong>{teamLeadData.teamName}</strong> • {teamLeadData.year?.name || 'Cohort'} • SECTION {teamLeadData.section?.name || 'A'}
                 </p>
               </div>
@@ -190,7 +190,7 @@ const UploadProject = () => {
 
             <button
               onClick={logoutTeamLead}
-              className="font-mono text-xs text-[#D4D8DD] hover:text-white underline uppercase tracking-wider"
+              className="font-mono text-xs text-[#D4D8DD] hover:text-white underline uppercase tracking-wider self-start sm:self-center py-1"
             >
               Exit Session
             </button>
@@ -198,14 +198,14 @@ const UploadProject = () => {
 
           {/* CHECK ONE-TIME SUBMISSION */}
           {teamLeadData.isSubmitted || submitSuccess ? (
-            <div className="bg-white border border-[#E2DFD7] p-12 text-center space-y-4">
-              <div className="w-16 h-16 bg-[#141719] text-white flex items-center justify-center mx-auto">
-                <FileCheck className="w-8 h-8 text-[#C85A32]" />
+            <div className="bg-white border border-[#E2DFD7] p-6 sm:p-12 text-center space-y-4">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-[#141719] text-white flex items-center justify-center mx-auto">
+                <FileCheck className="w-7 h-7 sm:w-8 sm:h-8 text-[#C85A32]" />
               </div>
-              <h2 className="font-display text-2xl font-bold uppercase tracking-tight text-[#141719]">
+              <h2 className="font-display text-xl sm:text-2xl font-bold uppercase tracking-tight text-[#141719]">
                 Submission Recorded & Locked
               </h2>
-              <div className="max-w-md mx-auto p-4 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono text-[#697077]">
+              <div className="max-w-md mx-auto p-3.5 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono text-[#697077]">
                 <strong>STATUS:</strong> One-time submission protocol enforced. Your capstone assets have been securely stored in the academic catalogue.
               </div>
               <p className="text-xs text-[#697077] max-w-sm mx-auto font-light leading-relaxed">
@@ -214,20 +214,20 @@ const UploadProject = () => {
             </div>
           ) : (
             /* SUBMISSION FORM */
-            <div className="bg-white border border-[#E2DFD7] p-6 sm:p-10 space-y-8">
+            <div className="bg-white border border-[#E2DFD7] p-4 sm:p-8 lg:p-10 space-y-6 sm:space-y-8">
               {submitError && (
                 <div className="p-4 bg-[#C85A32]/10 border border-[#C85A32] text-xs font-mono text-[#C85A32]">
                   {submitError}
                 </div>
               )}
 
-              <form onSubmit={handleSubmitProject} className="space-y-6">
+              <form onSubmit={handleSubmitProject} className="space-y-5 sm:space-y-6">
                 {/* Pre-filled Information Spec Sheet */}
-                <div className="bg-[#F8F7F4] border border-[#E2DFD7] p-5 space-y-3 font-mono text-xs">
+                <div className="bg-[#F8F7F4] border border-[#E2DFD7] p-4 sm:p-5 space-y-3 font-mono text-xs">
                   <div className="font-display font-bold uppercase tracking-widest text-[#141719] text-[11px] pb-2 border-b border-[#E2DFD7]">
                     Pre-Registered Academic Roster
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <span className="text-[#9AA1A9] text-[10px] block">TEAM IDENTITY:</span>
                       <span className="font-bold text-[#141719]">{teamLeadData.teamName}</span>
@@ -256,7 +256,7 @@ const UploadProject = () => {
                 </div>
 
                 {/* Submission Inputs */}
-                <div className="space-y-5">
+                <div className="space-y-4 sm:space-y-5">
                   <div>
                     <label className="block font-mono text-[11px] uppercase tracking-wider text-[#141719] mb-1 font-semibold">
                       Project Title <span className="text-[#C85A32]">*</span>
@@ -340,14 +340,14 @@ const UploadProject = () => {
                 </div>
 
                 {/* Final Warning */}
-                <div className="p-4 bg-[#F8F7F4] border-l-2 border-[#C85A32] font-mono text-xs text-[#697077]">
+                <div className="p-3.5 sm:p-4 bg-[#F8F7F4] border-l-2 border-[#C85A32] font-mono text-xs text-[#697077]">
                   <strong className="text-[#141719]">ONE-TIME SUBMISSION PROTOCOL:</strong> Confirm all repository links and technical attachments before final submission. This operation cannot be undone.
                 </div>
 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full finisterre-btn-rust text-xs justify-center py-3"
+                  className="w-full finisterre-btn-rust text-xs justify-center py-3.5 flex items-center"
                 >
                   <UploadCloud className="w-4 h-4 mr-2" />
                   <span>{submitting ? 'Recording Submission...' : 'Execute Final Project Submission'}</span>

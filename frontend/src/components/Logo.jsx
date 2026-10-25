@@ -3,17 +3,17 @@ import React from 'react';
 const Logo = ({ size = 'md', variant = 'dark', showText = true, className = '' }) => {
   // Dimensions map
   const sizeMap = {
-    sm: { icon: 'w-7 h-7', text: 'text-base', sub: 'text-[9px]' },
-    md: { icon: 'w-10 h-10', text: 'text-xl', sub: 'text-[10px]' },
-    lg: { icon: 'w-14 h-14', text: 'text-2xl', sub: 'text-xs' },
-    xl: { icon: 'w-20 h-20', text: 'text-3xl', sub: 'text-sm' },
+    sm: { icon: 'w-7 h-7', text: 'text-sm sm:text-base', sub: 'text-[8px] sm:text-[9px]' },
+    md: { icon: 'w-8 h-8 sm:w-10 sm:h-10', text: 'text-base sm:text-xl', sub: 'text-[8px] sm:text-[10px]' },
+    lg: { icon: 'w-12 h-12 sm:w-14 sm:h-14', text: 'text-xl sm:text-2xl', sub: 'text-[10px] sm:text-xs' },
+    xl: { icon: 'w-16 h-16 sm:w-20 sm:h-20', text: 'text-2xl sm:text-3xl', sub: 'text-xs sm:text-sm' },
   };
 
   const currentSize = sizeMap[size] || sizeMap.md;
   const isLight = variant === 'light';
 
   return (
-    <div className={`flex items-center space-x-3 select-none group ${className}`}>
+    <div className={`flex items-center space-x-2.5 sm:space-x-3 select-none group ${className}`}>
       {/* Precision Geometric SVG Emblem */}
       <div className={`${currentSize.icon} shrink-0 relative transition-transform duration-300 group-hover:scale-105`}>
         <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-xs">
@@ -76,4 +76,3 @@ const Logo = ({ size = 'md', variant = 'dark', showText = true, className = '' }
 };
 
 export default Logo;
-

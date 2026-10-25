@@ -27,7 +27,7 @@ const TeacherDashboard = () => {
   const { teacher } = useAuth();
   const navigate = useNavigate();
 
-  // Active Tab: 'all', 'pending', 'unrated', 'rated', 'leads', 'academic'
+  // Active Tab: 'all', 'pending', 'unrated', 'rated', 'leads', 'academic', 'faculty'
   const [activeTab, setActiveTab] = useState('all');
 
   // Metadata filters
@@ -163,11 +163,10 @@ const TeacherDashboard = () => {
   // Academic Creation: Year
   const handleCreateYear = async (e) => {
     e.preventDefault();
-    if (!newYearName.trim()) return;
     try {
       await api.post('/academic/years', { name: newYearName });
+      setFormMsg({ type: 'success', text: `Academic Year "${newYearName}" created successfully` });
       setNewYearName('');
-      setFormMsg({ type: 'success', text: 'Academic Cohort (Year) created successfully.' });
       fetchMetadata();
       loadTabData();
     } catch (err) {
@@ -178,14 +177,13 @@ const TeacherDashboard = () => {
   // Academic Creation: Section
   const handleCreateSection = async (e) => {
     e.preventDefault();
-    if (!newSectionName.trim() || !newSectionYearId) return;
     try {
       await api.post('/academic/sections', {
         name: newSectionName,
         yearId: newSectionYearId,
       });
+      setFormMsg({ type: 'success', text: `Section "${newSectionName}" created successfully` });
       setNewSectionName('');
-      setFormMsg({ type: 'success', text: 'Section / Branch added to cohort.' });
       fetchMetadata();
       loadTabData();
     } catch (err) {
@@ -196,35 +194,41 @@ const TeacherDashboard = () => {
   // Academic Creation: Team & Team Lead
   const handleCreateTeam = async (e) => {
     e.preventDefault();
-    setFormMsg({ type: '', text: '' });
 
     const members = newTeam.membersText
       .split('\n')
       .map((line) => line.trim())
-      .filter(Boolean)
+      .filter((line) => line.length > 0)
       .map((line) => {
         const parts = line.split(',');
         return {
-          name: parts[0]?.trim() || line,
+          name: parts[0]?.trim(),
           rollNumber: parts[1]?.trim() || '',
         };
       });
 
     try {
       const res = await api.post('/academic/teams', {
-        teamName: newTeam.teamName,
-        description: newTeam.description,
         yearId: newTeam.yearId,
         sectionId: newTeam.sectionId,
+        teamName: newTeam.teamName,
+        description: newTeam.description,
         leadName: newTeam.leadName,
         leadEmail: newTeam.leadEmail,
         members,
       });
 
-      setFormMsg({
-        type: res.data.emailStatus?.success ? 'success' : 'warning',
-        text: res.data.message || 'Team registered successfully!',
-      });
+      if (res.data.emailStatus?.success) {
+        setFormMsg({
+          type: 'success',
+          text: `Team "${newTeam.teamName}" registered & credentials dispatched to ${newTeam.leadEmail}`,
+        });
+      } else {
+        setFormMsg({
+          type: 'warning',
+          text: `Team created, but email dispatch failed (${res.data.emailStatus?.error || 'SMTP issue'}). Credentials: ${res.data.generatedPassword}`,
+        });
+      }
 
       setNewTeam({
         teamName: '',
@@ -325,14 +329,14 @@ const TeacherDashboard = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Top Banner (Finisterre Deep Slate & Maritime Rust) */}
-      <div className="bg-[#19323F] text-white p-6 sm:p-10 border border-[#141719] flex flex-wrap items-center justify-between gap-6">
+      <div className="bg-[#19323F] text-white p-5 sm:p-8 lg:p-10 border border-[#141719] flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
         <div className="space-y-1">
-          <div className="font-mono text-xs uppercase tracking-widest text-[#C85A32]">
+          <div className="font-mono text-[10px] sm:text-xs uppercase tracking-widest text-[#C85A32]">
             FACULTY CONTROL CENTER • EVALUATION PROTOCOLS
           </div>
-          <h1 className="font-display text-2xl sm:text-4xl font-bold uppercase tracking-tight text-white">
+          <h1 className="font-display text-xl sm:text-3xl lg:text-4xl font-bold uppercase tracking-tight text-white">
             {teacher?.name}
           </h1>
           <p className="font-mono text-xs text-[#D4D8DD]">
@@ -342,7 +346,7 @@ const TeacherDashboard = () => {
 
         <button
           onClick={loadTabData}
-          className="finisterre-btn-outline !text-white !border-white hover:!bg-white hover:!text-[#141719] text-xs py-2 px-4 inline-flex items-center space-x-1.5"
+          className="finisterre-btn-outline !text-white !border-white hover:!bg-white hover:!text-[#141719] text-xs py-2.5 px-4 inline-flex items-center space-x-1.5 w-full sm:w-auto justify-center"
         >
           <RefreshCw className="w-3.5 h-3.5 mr-1" />
           <span>Synchronize Records</span>
@@ -350,7 +354,7 @@ const TeacherDashboard = () => {
       </div>
 
       {/* Tabs Navigation (Finisterre Segmented Control) */}
-      <div className="bg-white border border-[#E2DFD7] p-2 overflow-x-auto">
+      <div className="bg-white border border-[#E2DFD7] p-1.5 sm:p-2 overflow-x-auto scrollbar-thin">
         <div className="flex space-x-1 min-w-max">
           {[
             { id: 'all', label: 'All Projects', icon: Layers },
@@ -367,13 +371,13 @@ const TeacherDashboard = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-2.5 font-display text-xs uppercase tracking-wider font-semibold transition ${
+                className={`flex items-center space-x-2 px-3 sm:px-4 py-2 sm:py-2.5 font-display text-xs uppercase tracking-wider font-semibold whitespace-nowrap transition ${
                   isSelected
                     ? 'bg-[#141719] text-white'
                     : 'text-[#697077] hover:text-[#141719] hover:bg-[#F8F7F4]'
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <Icon className="w-3.5 h-3.5 shrink-0" />
                 <span>{tab.label}</span>
               </button>
             );
@@ -383,15 +387,15 @@ const TeacherDashboard = () => {
 
       {/* Filter Bar */}
       {activeTab !== 'academic' && activeTab !== 'faculty' && (
-        <div className="bg-white p-4 border border-[#E2DFD7] flex flex-wrap items-center gap-3">
-          <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#141719]">Filter by:</span>
+        <div className="bg-white p-3.5 sm:p-4 border border-[#E2DFD7] flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3">
+          <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#141719] shrink-0">Filter by:</span>
           <select
             value={filterYear}
             onChange={(e) => {
               setFilterYear(e.target.value);
               setFilterSection('');
             }}
-            className="py-1.5 px-3 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono uppercase tracking-wider text-[#141719]"
+            className="w-full sm:w-auto py-2 px-3 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono uppercase tracking-wider text-[#141719]"
           >
             <option value="">All Academic Years</option>
             {years.map((y) => (
@@ -404,7 +408,7 @@ const TeacherDashboard = () => {
           <select
             value={filterSection}
             onChange={(e) => setFilterSection(e.target.value)}
-            className="py-1.5 px-3 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono uppercase tracking-wider text-[#141719]"
+            className="w-full sm:w-auto py-2 px-3 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono uppercase tracking-wider text-[#141719]"
           >
             <option value="">All Sections / Branches</option>
             {sections
@@ -421,43 +425,46 @@ const TeacherDashboard = () => {
       {/* TAB 1: ALL PROJECTS */}
       {activeTab === 'all' && (
         <div className="bg-white border border-[#E2DFD7] overflow-hidden">
-          <div className="p-5 border-b border-[#E2DFD7] flex justify-between items-center bg-[#F8F7F4]">
+          <div className="p-4 sm:p-5 border-b border-[#E2DFD7] flex flex-wrap justify-between items-center gap-2 bg-[#F8F7F4]">
             <h2 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719]">
               All Submitted Projects ({allProjects.length})
             </h2>
+            <span className="text-[10px] font-mono text-[#9AA1A9] sm:hidden">
+              ← Swipe to view full table →
+            </span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs font-mono text-[#484F56]">
+            <table className="w-full min-w-[700px] text-left text-xs font-mono text-[#484F56]">
               <thead className="bg-[#F8F7F4] text-[10px] uppercase font-bold tracking-widest text-[#697077] border-b border-[#E2DFD7]">
                 <tr>
-                  <th className="p-4">Project Title</th>
-                  <th className="p-4">Team</th>
-                  <th className="p-4">Academic Year</th>
-                  <th className="p-4">Section</th>
-                  <th className="p-4">Evaluation Status</th>
-                  <th className="p-4 text-right">Links</th>
+                  <th className="p-3.5 sm:p-4">Project Title</th>
+                  <th className="p-3.5 sm:p-4">Team</th>
+                  <th className="p-3.5 sm:p-4">Academic Year</th>
+                  <th className="p-3.5 sm:p-4">Section</th>
+                  <th className="p-3.5 sm:p-4">Evaluation Status</th>
+                  <th className="p-3.5 sm:p-4 text-right">Links</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E2DFD7]">
                 {allProjects.map((p) => (
                   <tr key={p._id} className="hover:bg-[#F8F7F4]/80">
-                    <td className="p-4 font-bold text-[#141719] font-sans text-sm">{p.title}</td>
-                    <td className="p-4">{p.teamId?.teamName}</td>
-                    <td className="p-4">{p.yearId?.name}</td>
-                    <td className="p-4">{p.sectionId?.name}</td>
-                    <td className="p-4">
+                    <td className="p-3.5 sm:p-4 font-bold text-[#141719] font-sans text-sm">{p.title}</td>
+                    <td className="p-3.5 sm:p-4">{p.teamId?.teamName}</td>
+                    <td className="p-3.5 sm:p-4">{p.yearId?.name}</td>
+                    <td className="p-3.5 sm:p-4">{p.sectionId?.name}</td>
+                    <td className="p-3.5 sm:p-4">
                       {p.status === 'rated' ? (
-                        <span className="px-2 py-0.5 bg-[#C85A32] text-white font-bold">
+                        <span className="px-2 py-0.5 bg-[#C85A32] text-white font-bold text-[10px]">
                           RATED: {p.evaluation?.totalScore}/40
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 bg-[#EFECE6] text-[#484F56] border border-[#E2DFD7]">
+                        <span className="px-2 py-0.5 bg-[#EFECE6] text-[#484F56] border border-[#E2DFD7] text-[10px]">
                           UNRATED
                         </span>
                       )}
                     </td>
-                    <td className="p-4 text-right space-x-2">
+                    <td className="p-3.5 sm:p-4 text-right space-x-2">
                       {p.repoUrl && (
                         <a href={p.repoUrl} target="_blank" rel="noreferrer" className="inline-block p-1 text-[#697077] hover:text-[#141719]">
                           <Github className="w-4 h-4" />
@@ -487,37 +494,42 @@ const TeacherDashboard = () => {
       {/* TAB 2: PENDING PROJECTS */}
       {activeTab === 'pending' && (
         <div className="bg-white border border-[#E2DFD7] overflow-hidden">
-          <div className="p-5 border-b border-[#E2DFD7] bg-[#F8F7F4]">
-            <h2 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719]">
-              Pending Submissions ({pendingProjects.length})
-            </h2>
-            <p className="text-[11px] text-[#697077] mt-1 font-mono">
-              Teams registered by faculty whose designated team lead has not executed final submission.
-            </p>
+          <div className="p-4 sm:p-5 border-b border-[#E2DFD7] flex flex-wrap justify-between items-start gap-2 bg-[#F8F7F4]">
+            <div>
+              <h2 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719]">
+                Pending Submissions ({pendingProjects.length})
+              </h2>
+              <p className="text-[11px] text-[#697077] mt-1 font-mono">
+                Teams registered whose designated team lead has not executed final submission.
+              </p>
+            </div>
+            <span className="text-[10px] font-mono text-[#9AA1A9] sm:hidden">
+              ← Swipe to view all →
+            </span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs font-mono text-[#484F56]">
+            <table className="w-full min-w-[650px] text-left text-xs font-mono text-[#484F56]">
               <thead className="bg-[#F8F7F4] text-[10px] uppercase font-bold tracking-widest text-[#697077] border-b border-[#E2DFD7]">
                 <tr>
-                  <th className="p-4">Team Name</th>
-                  <th className="p-4">Assigned Team Lead</th>
-                  <th className="p-4">Contact Email</th>
-                  <th className="p-4">Cohort</th>
-                  <th className="p-4">Section</th>
-                  <th className="p-4">Status</th>
+                  <th className="p-3.5 sm:p-4">Team Name</th>
+                  <th className="p-3.5 sm:p-4">Assigned Team Lead</th>
+                  <th className="p-3.5 sm:p-4">Contact Email</th>
+                  <th className="p-3.5 sm:p-4">Cohort</th>
+                  <th className="p-3.5 sm:p-4">Section</th>
+                  <th className="p-3.5 sm:p-4">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E2DFD7]">
                 {pendingProjects.map((t) => (
                   <tr key={t._id} className="hover:bg-[#F8F7F4]/80">
-                    <td className="p-4 font-bold text-[#141719] font-sans text-sm">{t.teamName}</td>
-                    <td className="p-4">{t.teamLead?.name}</td>
-                    <td className="p-4 text-[#C85A32]">{t.teamLead?.email}</td>
-                    <td className="p-4">{t.yearId?.name}</td>
-                    <td className="p-4">{t.sectionId?.name}</td>
-                    <td className="p-4">
-                      <span className="px-2 py-0.5 bg-[#EFECE6] text-[#697077] border border-[#E2DFD7]">
+                    <td className="p-3.5 sm:p-4 font-bold text-[#141719] font-sans text-sm">{t.teamName}</td>
+                    <td className="p-3.5 sm:p-4">{t.teamLead?.name}</td>
+                    <td className="p-3.5 sm:p-4 text-[#C85A32]">{t.teamLead?.email}</td>
+                    <td className="p-3.5 sm:p-4">{t.yearId?.name}</td>
+                    <td className="p-3.5 sm:p-4">{t.sectionId?.name}</td>
+                    <td className="p-3.5 sm:p-4">
+                      <span className="px-2 py-0.5 bg-[#EFECE6] text-[#697077] border border-[#E2DFD7] text-[10px]">
                         Awaiting Lead Upload
                       </span>
                     </td>
@@ -539,41 +551,46 @@ const TeacherDashboard = () => {
       {/* TAB 3: UNRATED PROJECTS */}
       {activeTab === 'unrated' && (
         <div className="bg-white border border-[#E2DFD7] overflow-hidden">
-          <div className="p-5 border-b border-[#E2DFD7] bg-[#F8F7F4]">
-            <h2 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719]">
-              Unrated Project Submissions ({unratedProjects.length})
-            </h2>
-            <p className="text-[11px] text-[#697077] mt-1 font-mono">
-              Awaiting faculty assessment. Completing evaluation automatically triggers an official scorecard email to the team lead.
-            </p>
+          <div className="p-4 sm:p-5 border-b border-[#E2DFD7] flex flex-wrap justify-between items-start gap-2 bg-[#F8F7F4]">
+            <div>
+              <h2 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719]">
+                Unrated Project Submissions ({unratedProjects.length})
+              </h2>
+              <p className="text-[11px] text-[#697077] mt-1 font-mono">
+                Awaiting faculty assessment. Evaluation automatically triggers an official scorecard email to the team lead.
+              </p>
+            </div>
+            <span className="text-[10px] font-mono text-[#9AA1A9] sm:hidden">
+              ← Swipe to view all →
+            </span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs font-mono text-[#484F56]">
+            <table className="w-full min-w-[680px] text-left text-xs font-mono text-[#484F56]">
               <thead className="bg-[#F8F7F4] text-[10px] uppercase font-bold tracking-widest text-[#697077] border-b border-[#E2DFD7]">
                 <tr>
-                  <th className="p-4">Project Title</th>
-                  <th className="p-4">Team & Lead</th>
-                  <th className="p-4">Cohort / Section</th>
-                  <th className="p-4">Submission Date</th>
-                  <th className="p-4 text-right">Faculty Action</th>
+                  <th className="p-3.5 sm:p-4">Project Title</th>
+                  <th className="p-3.5 sm:p-4">Team & Lead</th>
+                  <th className="p-3.5 sm:p-4">Cohort / Section</th>
+                  <th className="p-3.5 sm:p-4">Submission Date</th>
+                  <th className="p-3.5 sm:p-4 text-right">Faculty Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E2DFD7]">
                 {unratedProjects.map((p) => (
                   <tr key={p._id} className="hover:bg-[#F8F7F4]/80">
-                    <td className="p-4 font-bold text-[#141719] font-sans text-sm">{p.title}</td>
-                    <td className="p-4">
+                    <td className="p-3.5 sm:p-4 font-bold text-[#141719] font-sans text-sm">{p.title}</td>
+                    <td className="p-3.5 sm:p-4">
                       {p.teamId?.teamName}
                       <span className="text-[10px] text-[#9AA1A9] block">
                         Lead: {p.teamId?.teamLead?.email}
                       </span>
                     </td>
-                    <td className="p-4">
+                    <td className="p-3.5 sm:p-4">
                       {p.yearId?.name} • {p.sectionId?.name}
                     </td>
-                    <td className="p-4">{new Date(p.createdAt).toLocaleDateString()}</td>
-                    <td className="p-4 text-right">
+                    <td className="p-3.5 sm:p-4">{new Date(p.createdAt).toLocaleDateString()}</td>
+                    <td className="p-3.5 sm:p-4 text-right">
                       <button
                         onClick={() => setRatingTarget(p)}
                         className="finisterre-btn-rust text-xs py-1.5 px-3"
@@ -600,39 +617,42 @@ const TeacherDashboard = () => {
       {/* TAB 4: RATED PROJECTS */}
       {activeTab === 'rated' && (
         <div className="bg-white border border-[#E2DFD7] overflow-hidden">
-          <div className="p-5 border-b border-[#E2DFD7] bg-[#F8F7F4]">
+          <div className="p-4 sm:p-5 border-b border-[#E2DFD7] flex flex-wrap justify-between items-center gap-2 bg-[#F8F7F4]">
             <h2 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719]">
               Evaluated & Rated Archive ({ratedProjects.length})
             </h2>
+            <span className="text-[10px] font-mono text-[#9AA1A9] sm:hidden">
+              ← Swipe to view all →
+            </span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs font-mono text-[#484F56]">
+            <table className="w-full min-w-[800px] text-left text-xs font-mono text-[#484F56]">
               <thead className="bg-[#F8F7F4] text-[10px] uppercase font-bold tracking-widest text-[#697077] border-b border-[#E2DFD7]">
                 <tr>
-                  <th className="p-4">Project Title</th>
-                  <th className="p-4">Team</th>
-                  <th className="p-4">Tech Approach</th>
-                  <th className="p-4">Idea</th>
-                  <th className="p-4">Design Thinking</th>
-                  <th className="p-4">UI & UX</th>
-                  <th className="p-4">Total Score</th>
-                  <th className="p-4 text-right">Adjustment</th>
+                  <th className="p-3.5 sm:p-4">Project Title</th>
+                  <th className="p-3.5 sm:p-4">Team</th>
+                  <th className="p-3.5 sm:p-4">Tech Approach</th>
+                  <th className="p-3.5 sm:p-4">Idea</th>
+                  <th className="p-3.5 sm:p-4">Design Thinking</th>
+                  <th className="p-3.5 sm:p-4">UI & UX</th>
+                  <th className="p-3.5 sm:p-4">Total Score</th>
+                  <th className="p-3.5 sm:p-4 text-right">Adjustment</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E2DFD7]">
                 {ratedProjects.map((p) => (
                   <tr key={p._id} className="hover:bg-[#F8F7F4]/80">
-                    <td className="p-4 font-bold text-[#141719] font-sans text-sm">{p.title}</td>
-                    <td className="p-4">{p.teamId?.teamName}</td>
-                    <td className="p-4 font-bold">{p.evaluation?.technicalApproach}/10</td>
-                    <td className="p-4 font-bold">{p.evaluation?.idea}/10</td>
-                    <td className="p-4 font-bold">{p.evaluation?.designThinking}/10</td>
-                    <td className="p-4 font-bold">{p.evaluation?.uiUx}/10</td>
-                    <td className="p-4 font-bold text-[#C85A32] text-sm">
+                    <td className="p-3.5 sm:p-4 font-bold text-[#141719] font-sans text-sm">{p.title}</td>
+                    <td className="p-3.5 sm:p-4">{p.teamId?.teamName}</td>
+                    <td className="p-3.5 sm:p-4 font-bold">{p.evaluation?.technicalApproach}/10</td>
+                    <td className="p-3.5 sm:p-4 font-bold">{p.evaluation?.idea}/10</td>
+                    <td className="p-3.5 sm:p-4 font-bold">{p.evaluation?.designThinking}/10</td>
+                    <td className="p-3.5 sm:p-4 font-bold">{p.evaluation?.uiUx}/10</td>
+                    <td className="p-3.5 sm:p-4 font-bold text-[#C85A32] text-sm">
                       {p.evaluation?.totalScore} / 40
                     </td>
-                    <td className="p-4 text-right">
+                    <td className="p-3.5 sm:p-4 text-right">
                       <button
                         onClick={() => setRatingTarget(p)}
                         className="finisterre-btn-outline text-xs py-1 px-2.5"
@@ -658,46 +678,51 @@ const TeacherDashboard = () => {
       {/* TAB 5: TEAM LEAD DATA (YEAR-WISE) */}
       {activeTab === 'leads' && (
         <div className="bg-white border border-[#E2DFD7] overflow-hidden">
-          <div className="p-5 border-b border-[#E2DFD7] bg-[#F8F7F4]">
-            <h2 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719]">
-              Team Lead Directory & Generated Credentials ({teamLeadsData.length})
-            </h2>
-            <p className="text-[11px] text-[#697077] mt-1 font-mono">
-              Faculty reference directory of auto-generated login credentials organized year-wise.
-            </p>
+          <div className="p-4 sm:p-5 border-b border-[#E2DFD7] flex flex-wrap justify-between items-start gap-2 bg-[#F8F7F4]">
+            <div>
+              <h2 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719]">
+                Team Lead Directory & Credentials ({teamLeadsData.length})
+              </h2>
+              <p className="text-[11px] text-[#697077] mt-1 font-mono">
+                Faculty reference directory of auto-generated login credentials organized year-wise.
+              </p>
+            </div>
+            <span className="text-[10px] font-mono text-[#9AA1A9] sm:hidden">
+              ← Swipe to view all →
+            </span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs font-mono text-[#484F56]">
+            <table className="w-full min-w-[800px] text-left text-xs font-mono text-[#484F56]">
               <thead className="bg-[#F8F7F4] text-[10px] uppercase font-bold tracking-widest text-[#697077] border-b border-[#E2DFD7]">
                 <tr>
-                  <th className="p-4">Cohort (Year)</th>
-                  <th className="p-4">Section</th>
-                  <th className="p-4">Team</th>
-                  <th className="p-4">Lead Name</th>
-                  <th className="p-4">Login Email</th>
-                  <th className="p-4">Generated Password</th>
-                  <th className="p-4">Status</th>
+                  <th className="p-3.5 sm:p-4">Cohort (Year)</th>
+                  <th className="p-3.5 sm:p-4">Section</th>
+                  <th className="p-3.5 sm:p-4">Team</th>
+                  <th className="p-3.5 sm:p-4">Lead Name</th>
+                  <th className="p-3.5 sm:p-4">Login Email</th>
+                  <th className="p-3.5 sm:p-4">Generated Password</th>
+                  <th className="p-3.5 sm:p-4">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E2DFD7]">
                 {teamLeadsData.map((lead) => (
                   <tr key={lead._id} className="hover:bg-[#F8F7F4]/80">
-                    <td className="p-4 font-bold text-[#141719]">{lead.year}</td>
-                    <td className="p-4">{lead.section}</td>
-                    <td className="p-4 font-sans font-semibold text-[#141719]">{lead.teamName}</td>
-                    <td className="p-4">{lead.leadName}</td>
-                    <td className="p-4 text-[#19323F] font-bold">{lead.leadEmail}</td>
-                    <td className="p-4">
+                    <td className="p-3.5 sm:p-4 font-bold text-[#141719]">{lead.year}</td>
+                    <td className="p-3.5 sm:p-4">{lead.section}</td>
+                    <td className="p-3.5 sm:p-4 font-sans font-semibold text-[#141719]">{lead.teamName}</td>
+                    <td className="p-3.5 sm:p-4">{lead.leadName}</td>
+                    <td className="p-3.5 sm:p-4 text-[#19323F] font-bold">{lead.leadEmail}</td>
+                    <td className="p-3.5 sm:p-4">
                       <span className="bg-[#141719] text-[#EFECE6] px-2 py-0.5 font-bold">
                         {lead.credentials}
                       </span>
                     </td>
-                    <td className="p-4">
+                    <td className="p-3.5 sm:p-4">
                       {lead.isSubmitted ? (
-                        <span className="text-[#C85A32] font-bold">SUBMITTED</span>
+                        <span className="text-[#C85A32] font-bold text-[10px]">SUBMITTED</span>
                       ) : (
-                        <span className="text-[#9AA1A9]">PENDING</span>
+                        <span className="text-[#9AA1A9] text-[10px]">PENDING</span>
                       )}
                     </td>
                   </tr>
@@ -717,10 +742,10 @@ const TeacherDashboard = () => {
 
       {/* TAB 6: ACADEMIC HIERARCHY MANAGEMENT & CASCADING DELETIONS */}
       {activeTab === 'academic' && (
-        <div className="space-y-10">
+        <div className="space-y-8 sm:space-y-10">
           {formMsg.text && (
             <div
-              className={`p-4 border font-mono text-xs ${
+              className={`p-3.5 sm:p-4 border font-mono text-xs ${
                 formMsg.type === 'success'
                   ? 'bg-[#F8F7F4] border-[#141719] text-[#141719]'
                   : formMsg.type === 'warning'
@@ -735,7 +760,7 @@ const TeacherDashboard = () => {
           {/* Creation Forms Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Create Year */}
-            <div className="bg-white border border-[#E2DFD7] p-6 space-y-4">
+            <div className="bg-white border border-[#E2DFD7] p-5 sm:p-6 space-y-4">
               <h3 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719] flex items-center space-x-2">
                 <Plus className="w-3.5 h-3.5 text-[#C85A32]" />
                 <span>01. Add Academic Year (Cohort)</span>
@@ -749,14 +774,14 @@ const TeacherDashboard = () => {
                   onChange={(e) => setNewYearName(e.target.value)}
                   className="w-full px-3 py-2 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono text-[#141719] focus:outline-hidden focus:border-[#141719]"
                 />
-                <button type="submit" className="w-full finisterre-btn text-xs py-2">
+                <button type="submit" className="w-full finisterre-btn text-xs py-2.5">
                   Create Year
                 </button>
               </form>
             </div>
 
             {/* Create Section */}
-            <div className="bg-white border border-[#E2DFD7] p-6 space-y-4">
+            <div className="bg-white border border-[#E2DFD7] p-5 sm:p-6 space-y-4">
               <h3 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719] flex items-center space-x-2">
                 <Plus className="w-3.5 h-3.5 text-[#C85A32]" />
                 <span>02. Add Section / Branch</span>
@@ -785,25 +810,25 @@ const TeacherDashboard = () => {
                   className="w-full px-3 py-2 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono text-[#141719] focus:outline-hidden focus:border-[#141719]"
                 />
 
-                <button type="submit" className="w-full finisterre-btn text-xs py-2">
+                <button type="submit" className="w-full finisterre-btn text-xs py-2.5">
                   Create Section
                 </button>
               </form>
             </div>
 
             {/* Create Team & Team Lead */}
-            <div className="bg-white border border-[#E2DFD7] p-6 space-y-4">
+            <div className="bg-white border border-[#E2DFD7] p-5 sm:p-6 space-y-4">
               <h3 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719] flex items-center space-x-2">
                 <Plus className="w-3.5 h-3.5 text-[#C85A32]" />
                 <span>03. Add Team & Team Lead</span>
               </h3>
               <form onSubmit={handleCreateTeam} className="space-y-3">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <select
                     required
                     value={newTeam.yearId}
                     onChange={(e) => setNewTeam({ ...newTeam, yearId: e.target.value, sectionId: '' })}
-                    className="w-full px-2 py-1.5 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono"
+                    className="w-full px-2 py-2 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono"
                   >
                     <option value="">Cohort</option>
                     {years.map((y) => (
@@ -817,7 +842,7 @@ const TeacherDashboard = () => {
                     required
                     value={newTeam.sectionId}
                     onChange={(e) => setNewTeam({ ...newTeam, sectionId: e.target.value })}
-                    className="w-full px-2 py-1.5 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono"
+                    className="w-full px-2 py-2 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono"
                   >
                     <option value="">Section</option>
                     {sections
@@ -836,7 +861,7 @@ const TeacherDashboard = () => {
                   placeholder="Team Name (e.g. WaveRiders)"
                   value={newTeam.teamName}
                   onChange={(e) => setNewTeam({ ...newTeam, teamName: e.target.value })}
-                  className="w-full px-3 py-1.5 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono"
+                  className="w-full px-3 py-2 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono"
                 />
 
                 <input
@@ -844,17 +869,17 @@ const TeacherDashboard = () => {
                   placeholder="Project Theme"
                   value={newTeam.description}
                   onChange={(e) => setNewTeam({ ...newTeam, description: e.target.value })}
-                  className="w-full px-3 py-1.5 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono"
+                  className="w-full px-3 py-2 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono"
                 />
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <input
                     type="text"
                     required
                     placeholder="Lead Full Name"
                     value={newTeam.leadName}
                     onChange={(e) => setNewTeam({ ...newTeam, leadName: e.target.value })}
-                    className="w-full px-2 py-1.5 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono"
+                    className="w-full px-2 py-2 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono"
                   />
                   <input
                     type="email"
@@ -862,7 +887,7 @@ const TeacherDashboard = () => {
                     placeholder="Lead Email (Auth)"
                     value={newTeam.leadEmail}
                     onChange={(e) => setNewTeam({ ...newTeam, leadEmail: e.target.value })}
-                    className="w-full px-2 py-1.5 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono"
+                    className="w-full px-2 py-2 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono"
                   />
                 </div>
 
@@ -871,10 +896,10 @@ const TeacherDashboard = () => {
                   placeholder="Members (one per line, e.g: John Doe, 21CSE001)"
                   value={newTeam.membersText}
                   onChange={(e) => setNewTeam({ ...newTeam, membersText: e.target.value })}
-                  className="w-full px-3 py-1.5 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono"
+                  className="w-full px-3 py-2 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono"
                 ></textarea>
 
-                <button type="submit" className="w-full finisterre-btn-rust text-xs py-2">
+                <button type="submit" className="w-full finisterre-btn-rust text-xs py-2.5">
                   Create Team & Dispatch Credentials
                 </button>
               </form>
@@ -891,7 +916,7 @@ const TeacherDashboard = () => {
             {/* Years & Sections Hierarchy */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Years List */}
-              <div className="bg-white border border-[#E2DFD7] p-5">
+              <div className="bg-white border border-[#E2DFD7] p-4 sm:p-5">
                 <h3 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719] mb-4">
                   Academic Years ({years.length})
                 </h3>
@@ -904,7 +929,7 @@ const TeacherDashboard = () => {
                       <span className="font-mono text-xs font-bold text-[#141719]">{y.name}</span>
                       <button
                         onClick={() => requestDelete('year', y)}
-                        className="p-1 text-[#697077] hover:text-[#C85A32] transition"
+                        className="p-1.5 text-[#697077] hover:text-[#C85A32] transition"
                         title="Cascade Delete Year"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -916,7 +941,7 @@ const TeacherDashboard = () => {
               </div>
 
               {/* Sections List */}
-              <div className="bg-white border border-[#E2DFD7] p-5">
+              <div className="bg-white border border-[#E2DFD7] p-4 sm:p-5">
                 <h3 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719] mb-4">
                   Sections & Branches ({sections.length})
                 </h3>
@@ -926,7 +951,7 @@ const TeacherDashboard = () => {
                       key={s._id}
                       className="p-3 bg-[#F8F7F4] flex items-center justify-between border border-[#E2DFD7]"
                     >
-                      <div>
+                      <div className="min-w-0">
                         <span className="font-mono text-xs font-bold text-[#141719]">{s.name}</span>
                         <span className="font-mono text-[10px] text-[#9AA1A9] ml-2">
                           ({s.yearId?.name || 'Cohort'})
@@ -934,7 +959,7 @@ const TeacherDashboard = () => {
                       </div>
                       <button
                         onClick={() => requestDelete('section', s)}
-                        className="p-1 text-[#697077] hover:text-[#C85A32] transition"
+                        className="p-1.5 text-[#697077] hover:text-[#C85A32] transition shrink-0"
                         title="Cascade Delete Section"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -947,12 +972,17 @@ const TeacherDashboard = () => {
             </div>
 
             {/* Teams List */}
-            <div className="bg-white border border-[#E2DFD7] p-5">
-              <h3 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719] mb-4">
-                Registered Teams & Leads ({teams.length})
-              </h3>
+            <div className="bg-white border border-[#E2DFD7] p-4 sm:p-5">
+              <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
+                <h3 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719]">
+                  Registered Teams & Leads ({teams.length})
+                </h3>
+                <span className="text-[10px] font-mono text-[#9AA1A9] sm:hidden">
+                  ← Swipe to view all →
+                </span>
+              </div>
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs font-mono text-[#484F56]">
+                <table className="w-full min-w-[700px] text-left text-xs font-mono text-[#484F56]">
                   <thead className="bg-[#F8F7F4] text-[10px] uppercase font-bold tracking-widest text-[#697077] border-b border-[#E2DFD7]">
                     <tr>
                       <th className="p-3">Team Name</th>
@@ -976,7 +1006,7 @@ const TeacherDashboard = () => {
                         <td className="p-3 text-right">
                           <button
                             onClick={() => requestDelete('team', t)}
-                            className="p-1 text-[#697077] hover:text-[#C85A32] transition"
+                            className="p-1.5 text-[#697077] hover:text-[#C85A32] transition"
                             title="Delete Team"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -1001,10 +1031,10 @@ const TeacherDashboard = () => {
 
       {/* TAB 7: FACULTY ROSTER */}
       {activeTab === 'faculty' && (
-        <div className="space-y-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="space-y-6 sm:space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Enrollment Form */}
-            <div className="lg:col-span-1 bg-white border border-[#E2DFD7] p-6 space-y-5">
+            <div className="lg:col-span-1 bg-white border border-[#E2DFD7] p-4 sm:p-6 space-y-4 sm:space-y-5">
               <div>
                 <h3 className="font-display text-sm uppercase tracking-widest font-bold text-[#141719] flex items-center space-x-2">
                   <UserCheck className="w-4 h-4 text-[#C85A32]" />
@@ -1027,7 +1057,7 @@ const TeacherDashboard = () => {
                 </div>
               )}
 
-              <form onSubmit={handleCreateColleague} className="space-y-4">
+              <form onSubmit={handleCreateColleague} className="space-y-3.5 sm:space-y-4">
                 <div>
                   <label className="block text-[11px] font-mono uppercase tracking-wider text-[#697077] mb-1">
                     Full Name *
@@ -1090,7 +1120,7 @@ const TeacherDashboard = () => {
                 <button
                   type="submit"
                   disabled={colleagueMsg.loading}
-                  className="w-full finisterre-btn-rust text-xs py-2.5 flex items-center justify-center space-x-2 disabled:opacity-50"
+                  className="w-full finisterre-btn-rust text-xs py-3 flex items-center justify-center space-x-2 disabled:opacity-50"
                 >
                   <UserCheck className="w-3.5 h-3.5" />
                   <span>{colleagueMsg.loading ? 'Enrolling & Sending Mail...' : 'Enroll Faculty Member'}</span>
@@ -1100,7 +1130,7 @@ const TeacherDashboard = () => {
 
             {/* Faculty Directory Table */}
             <div className="lg:col-span-2 bg-white border border-[#E2DFD7] overflow-hidden flex flex-col">
-              <div className="p-5 border-b border-[#E2DFD7] bg-[#F8F7F4] flex justify-between items-center">
+              <div className="p-4 sm:p-5 border-b border-[#E2DFD7] bg-[#F8F7F4] flex flex-wrap justify-between items-center gap-2">
                 <div>
                   <h2 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719]">
                     Faculty Evaluator Directory ({colleagues.length})
@@ -1109,30 +1139,35 @@ const TeacherDashboard = () => {
                     Authorized faculty members with grading, evaluation, and management privileges.
                   </p>
                 </div>
-                <button
-                  onClick={loadTabData}
-                  className="p-1.5 text-[#697077] hover:text-[#141719] border border-[#E2DFD7] bg-white transition"
-                  title="Refresh Roster"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center space-x-2">
+                  <span className="text-[10px] font-mono text-[#9AA1A9] sm:hidden">
+                    ← Swipe to view →
+                  </span>
+                  <button
+                    onClick={loadTabData}
+                    className="p-1.5 text-[#697077] hover:text-[#141719] border border-[#E2DFD7] bg-white transition"
+                    title="Refresh Roster"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
 
               <div className="overflow-x-auto flex-1">
-                <table className="w-full text-left text-xs font-mono text-[#484F56]">
+                <table className="w-full min-w-[600px] text-left text-xs font-mono text-[#484F56]">
                   <thead className="bg-[#F8F7F4] text-[10px] uppercase font-bold tracking-widest text-[#697077] border-b border-[#E2DFD7]">
                     <tr>
-                      <th className="p-4">Faculty Member</th>
-                      <th className="p-4">Email</th>
-                      <th className="p-4">Department</th>
-                      <th className="p-4">Access Role</th>
-                      <th className="p-4 text-right">Joined</th>
+                      <th className="p-3.5 sm:p-4">Faculty Member</th>
+                      <th className="p-3.5 sm:p-4">Email</th>
+                      <th className="p-3.5 sm:p-4">Department</th>
+                      <th className="p-3.5 sm:p-4">Access Role</th>
+                      <th className="p-3.5 sm:p-4 text-right">Joined</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E2DFD7]">
                     {colleagues.map((colleague) => (
                       <tr key={colleague._id} className="hover:bg-[#F8F7F4]/80">
-                        <td className="p-4">
+                        <td className="p-3.5 sm:p-4">
                           <div className="font-bold text-[#141719] font-sans text-sm flex items-center space-x-2">
                             <span>{colleague.name}</span>
                             {teacher?.email === colleague.email && (
@@ -1142,17 +1177,17 @@ const TeacherDashboard = () => {
                             )}
                           </div>
                         </td>
-                        <td className="p-4 text-[#C85A32]">{colleague.email}</td>
-                        <td className="p-4 text-[#141719]">
+                        <td className="p-3.5 sm:p-4 text-[#C85A32]">{colleague.email}</td>
+                        <td className="p-3.5 sm:p-4 text-[#141719]">
                           {colleague.department || <span className="text-[#9AA1A9]">General Faculty</span>}
                         </td>
-                        <td className="p-4">
+                        <td className="p-3.5 sm:p-4">
                           <span className="inline-flex items-center space-x-1 px-2 py-0.5 bg-[#EFECE6] border border-[#E2DFD7] text-[#141719] text-[10px] font-bold">
                             <Shield className="w-3 h-3 text-[#C85A32]" />
                             <span>EVALUATOR</span>
                           </span>
                         </td>
-                        <td className="p-4 text-right text-[11px] text-[#697077]">
+                        <td className="p-3.5 sm:p-4 text-right text-[11px] text-[#697077]">
                           {colleague.createdAt ? new Date(colleague.createdAt).toLocaleDateString() : 'Active'}
                         </td>
                       </tr>

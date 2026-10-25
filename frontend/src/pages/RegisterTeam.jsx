@@ -10,10 +10,7 @@ import {
   Plus,
   Trash2,
   AlertTriangle,
-  CheckCircle2,
   Lock,
-  Mail,
-  User,
   FolderTree,
 } from 'lucide-react';
 
@@ -127,25 +124,25 @@ const RegisterTeam = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-10">
+    <div className="max-w-3xl mx-auto space-y-6 sm:space-y-10">
       {/* Editorial Header */}
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center space-x-2 font-mono text-[11px] tracking-widest uppercase text-[#C85A32]">
+      <div className="text-center space-y-2.5 sm:space-y-3">
+        <div className="inline-flex items-center space-x-2 font-mono text-[10px] sm:text-[11px] tracking-widest uppercase text-[#C85A32]">
           <Compass className="w-3.5 h-3.5" />
           <span>CAPSTONE TEAM SELF-SERVICE PROTOCOL</span>
         </div>
-        <h1 className="font-display text-3xl sm:text-5xl font-bold uppercase tracking-tight text-[#141719]">
+        <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl font-bold uppercase tracking-tight text-[#141719]">
           Student Team Registration
         </h1>
-        <p className="text-xs sm:text-sm text-[#697077] max-w-xl mx-auto font-light leading-relaxed">
+        <p className="text-xs sm:text-sm text-[#697077] max-w-xl mx-auto font-light leading-relaxed px-2">
           Create your capstone team, designate your team lead credentials, select your academic cohort, and enroll your student research members.
         </p>
       </div>
 
       {/* Main Registration Card */}
-      <div className="bg-white border border-[#E2DFD7] p-6 sm:p-10 shadow-2xs space-y-8">
+      <div className="bg-white border border-[#E2DFD7] p-4 sm:p-8 lg:p-10 shadow-2xs space-y-6 sm:space-y-8">
         {/* Step indicator header */}
-        <div className="flex items-center justify-between border-b border-[#E2DFD7] pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#E2DFD7] pb-4 gap-2">
           <div className="flex items-center space-x-3">
             <Logo size="sm" showText={false} />
             <div>
@@ -160,7 +157,7 @@ const RegisterTeam = () => {
 
           <Link
             to="/upload"
-            className="text-xs font-mono text-[#C85A32] hover:underline uppercase tracking-wider hidden sm:block"
+            className="text-xs font-mono text-[#C85A32] hover:underline uppercase tracking-wider self-start sm:self-center"
           >
             Already registered? Sign In →
           </Link>
@@ -173,7 +170,7 @@ const RegisterTeam = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
           {/* SECTION 1: ACADEMIC COHORT & PLACEMENT */}
           <div className="space-y-4">
             <h3 className="font-display text-xs font-bold uppercase tracking-widest text-[#141719] flex items-center space-x-2 pb-2 border-b border-[#E2DFD7]">
@@ -352,7 +349,7 @@ const RegisterTeam = () => {
               <button
                 type="button"
                 onClick={addMember}
-                className="font-mono text-[11px] text-[#C85A32] hover:text-[#B34A24] inline-flex items-center space-x-1 font-semibold uppercase tracking-wider"
+                className="font-mono text-[11px] text-[#C85A32] hover:text-[#B34A24] inline-flex items-center space-x-1 font-semibold uppercase tracking-wider py-1"
               >
                 <Plus className="w-3 h-3" />
                 <span>Add Member</span>
@@ -363,53 +360,55 @@ const RegisterTeam = () => {
               List the other students working in your capstone team (excluding the Team Lead).
             </p>
 
-            <div className="space-y-2.5">
+            <div className="space-y-3">
               {members.map((member, idx) => (
-                <div key={idx} className="flex items-center space-x-3 bg-[#F8F7F4] p-3 border border-[#E2DFD7]">
-                  <span className="font-mono text-xs font-bold text-[#697077] w-6 text-center">
-                    {idx + 1}.
-                  </span>
+                <div key={idx} className="bg-[#F8F7F4] p-3 sm:p-4 border border-[#E2DFD7] space-y-2">
+                  <div className="flex items-center justify-between text-xs font-mono font-bold text-[#697077]">
+                    <span>STUDENT MEMBER #{idx + 1}</span>
+                    {members.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeMember(idx)}
+                        className="text-[#C85A32] hover:text-[#B34A24] p-1 inline-flex items-center space-x-1 transition"
+                        title="Remove member"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span className="text-[10px] uppercase font-bold sm:hidden">Remove</span>
+                      </button>
+                    )}
+                  </div>
 
-                  <input
-                    type="text"
-                    placeholder="Student Full Name"
-                    value={member.name}
-                    onChange={(e) => handleMemberChange(idx, 'name', e.target.value)}
-                    className="flex-1 px-3 py-1.5 bg-white border border-[#E2DFD7] text-xs font-sans text-[#141719] placeholder-[#9AA1A9] focus:outline-hidden focus:border-[#141719]"
-                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      placeholder="Student Full Name"
+                      value={member.name}
+                      onChange={(e) => handleMemberChange(idx, 'name', e.target.value)}
+                      className="w-full px-3 py-2 bg-white border border-[#E2DFD7] text-xs font-sans text-[#141719] placeholder-[#9AA1A9] focus:outline-hidden focus:border-[#141719]"
+                    />
 
-                  <input
-                    type="text"
-                    placeholder="Roll Number / Student ID (e.g. 21CSE042)"
-                    value={member.rollNumber}
-                    onChange={(e) => handleMemberChange(idx, 'rollNumber', e.target.value)}
-                    className="flex-1 px-3 py-1.5 bg-white border border-[#E2DFD7] text-xs font-mono text-[#141719] placeholder-[#9AA1A9] focus:outline-hidden focus:border-[#141719]"
-                  />
-
-                  {members.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeMember(idx)}
-                      className="p-1.5 text-[#697077] hover:text-[#C85A32] transition"
-                      title="Remove member"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
+                    <input
+                      type="text"
+                      placeholder="Roll Number / ID (e.g. 21CSE042)"
+                      value={member.rollNumber}
+                      onChange={(e) => handleMemberChange(idx, 'rollNumber', e.target.value)}
+                      className="w-full px-3 py-2 bg-white border border-[#E2DFD7] text-xs font-mono text-[#141719] placeholder-[#9AA1A9] focus:outline-hidden focus:border-[#141719]"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Submission Notice & Action */}
-          <div className="p-4 bg-[#F8F7F4] border-l-2 border-[#C85A32] font-mono text-xs text-[#697077] leading-relaxed">
+          <div className="p-3.5 sm:p-4 bg-[#F8F7F4] border-l-2 border-[#C85A32] font-mono text-[11px] sm:text-xs text-[#697077] leading-relaxed">
             <strong className="text-[#141719]">REGISTRATION CONFIRMATION:</strong> By completing registration, you will be authenticated as the designated Team Lead. An official enrollment receipt will be emailed to your registered address.
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-2">
             <Link
               to="/upload"
-              className="text-xs font-mono text-[#697077] hover:text-[#141719] underline uppercase tracking-wider"
+              className="text-xs font-mono text-[#697077] hover:text-[#141719] underline uppercase tracking-wider text-center sm:text-left py-2"
             >
               ← Back to Lead Sign In
             </Link>
@@ -417,7 +416,7 @@ const RegisterTeam = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full sm:w-auto finisterre-btn-rust text-xs px-8 py-3.5 justify-center"
+              className="w-full sm:w-auto finisterre-btn-rust text-xs px-8 py-3.5 justify-center flex items-center"
             >
               <span>{submitting ? 'Registering Team...' : 'Register Team & Proceed'}</span>
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -430,4 +429,3 @@ const RegisterTeam = () => {
 };
 
 export default RegisterTeam;
-

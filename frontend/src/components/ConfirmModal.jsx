@@ -5,17 +5,18 @@ const ConfirmModal = ({ isOpen, title, message, warningNote, onConfirm, onCancel
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white border border-[#141719] max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-white border border-[#141719] max-w-md w-full p-5 sm:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto my-auto">
         <button
           onClick={onCancel}
           disabled={loading}
-          className="absolute top-4 right-4 text-[#697077] hover:text-[#141719] p-1 transition"
+          className="absolute top-4 right-4 text-[#697077] hover:text-[#141719] p-1.5 transition"
+          aria-label="Close dialog"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center space-x-3 mb-4">
+        <div className="flex items-center space-x-3 mb-4 pr-6">
           <div className="w-10 h-10 bg-[#C85A32]/10 border border-[#C85A32] flex items-center justify-center text-[#C85A32] shrink-0">
             <AlertTriangle className="w-5 h-5" />
           </div>
@@ -23,7 +24,7 @@ const ConfirmModal = ({ isOpen, title, message, warningNote, onConfirm, onCancel
             <span className="font-mono text-[10px] uppercase tracking-widest text-[#C85A32] font-bold block">
               Permanent Deletion Protocol
             </span>
-            <h3 className="font-display text-lg font-bold uppercase tracking-tight text-[#141719]">{title}</h3>
+            <h3 className="font-display text-base sm:text-lg font-bold uppercase tracking-tight text-[#141719]">{title}</h3>
           </div>
         </div>
 
@@ -36,12 +37,12 @@ const ConfirmModal = ({ isOpen, title, message, warningNote, onConfirm, onCancel
           </div>
         )}
 
-        <div className="flex justify-end space-x-3">
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-2.5 sm:gap-3">
           <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="finisterre-btn-outline text-xs py-2 px-4"
+            className="finisterre-btn-outline text-xs py-2.5 px-4 justify-center"
           >
             Cancel
           </button>
@@ -49,7 +50,7 @@ const ConfirmModal = ({ isOpen, title, message, warningNote, onConfirm, onCancel
             type="button"
             onClick={onConfirm}
             disabled={loading}
-            className="finisterre-btn-rust text-xs py-2 px-4"
+            className="finisterre-btn-rust text-xs py-2.5 px-4 justify-center flex items-center"
           >
             <Trash2 className="w-3.5 h-3.5 mr-1.5" />
             <span>{loading ? 'Executing...' : confirmText}</span>

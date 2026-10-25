@@ -4,9 +4,9 @@ import { ShieldCheck, Award, ArrowUpRight } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-[#141719] text-[#EFECE6] border-t border-black mt-20 pt-16 pb-12">
+    <footer className="bg-[#141719] text-[#EFECE6] border-t border-black mt-12 sm:mt-20 pt-10 sm:pt-16 pb-8 sm:pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-[#2C3238]">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 sm:gap-10 pb-10 sm:pb-12 border-b border-[#2C3238]">
           {/* Brand Col */}
           <div className="space-y-4 md:col-span-1">
             <Logo size="sm" variant="light" />
@@ -53,11 +53,11 @@ const Footer = () => {
             <p className="text-xs text-[#9AA1A9] leading-relaxed">
               Every submission is rigorously rated across four core faculty vectors:
             </p>
-            <div className="grid grid-cols-2 gap-2 text-[11px] font-mono text-[#D4D8DD]">
-              <span className="bg-[#1F252A] p-1.5 border border-[#2C3238]">• Tech Approach</span>
-              <span className="bg-[#1F252A] p-1.5 border border-[#2C3238]">• Innovation</span>
-              <span className="bg-[#1F252A] p-1.5 border border-[#2C3238]">• Design Thinking</span>
-              <span className="bg-[#1F252A] p-1.5 border border-[#2C3238]">• UI & UX</span>
+            <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-[11px] font-mono text-[#D4D8DD]">
+              <span className="bg-[#1F252A] p-1.5 border border-[#2C3238] truncate">• Tech Approach</span>
+              <span className="bg-[#1F252A] p-1.5 border border-[#2C3238] truncate">• Innovation</span>
+              <span className="bg-[#1F252A] p-1.5 border border-[#2C3238] truncate">• Design Thinking</span>
+              <span className="bg-[#1F252A] p-1.5 border border-[#2C3238] truncate">• UI & UX</span>
             </div>
           </div>
 
@@ -76,13 +76,13 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#697077] gap-4">
+        <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#697077] gap-3 sm:gap-4 text-center sm:text-left">
           <p>© {new Date().getFullYear()} College Project Hub. Inspired by Finisterre’s functional maritime design ethos.</p>
-          <div className="flex space-x-6 text-[11px] tracking-wider uppercase font-mono">
+          <div className="flex flex-wrap justify-center sm:justify-start gap-3 sm:gap-5 text-[10px] sm:text-[11px] tracking-wider uppercase font-mono">
             <span>Security & Verifiability</span>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <span>Cascade Deletes</span>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <span>MERN Stack</span>
           </div>
         </div>
