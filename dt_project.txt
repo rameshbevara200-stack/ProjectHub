@@ -1,0 +1,76 @@
+                                                                                                             College project hub
+
+ Aim:To combine all projects regarding students in one platform.
+ Features:
+     1)View projects
+     2)Upload project
+     3)Teacher portal
+
+1) View projects
+       *All uploaded projects are available in this page by year.
+      *preview also available for the projects
+
+2)Upload project
+      *Team leads upload the project at once only.
+      *only authorized team lead can upload the project.
+     *the team leads email and password is verified when uploading the project,
+        Team lead email = that is given by the teacher while creating the team
+        Password = the password is automatically generated when the teacher created the team and send the password credentials to the team lead mail.
+   STEPS:
+      *First check the email is registered by techer or not,if the email not exist dosent check the password just tell him that "you are not authorized",if the email is exist now go and check the password if the password is wrong tell him that "your password is wrong just check that".
+      *if the team lead is identify and the password is correct  you can access him to upload project, and fill the deafult details you already know from the teacher portal like team members,team name,description and some information.
+ 
+     NOTE:One time submission is accessible.
+
+==================================================================================
+                         THE FLOW OF PROJECTS IS
+
+                                   YEAR
+                                    |
+                                 SECTION
+                                    |
+                                  TEAM
+                                    |
+                                TEAM LEAD
+===================================================================================
+
+3)Teacher portal
+       *The techer portal have a special autherization about the application.
+   Features:
+         1)All projects
+         2)Pending projects
+         3)Unrated projects
+         4)Rated projects
+         5)Team lead data(year wise)
+     
+    1)All projects 
+       *All submitted projects are available here to see year and branch wise.
+    
+    2)Pending projects
+       *All pending projects which means the teams are registered but the project is not submitted.
+
+    3)Unrated projects
+         *The projects which are not evaluated by the teacher are in this portal.
+         *Techer can rate the projects from this page.
+         *While rating it shows some categories to rate like technical approach,idea,desing thinking,UI & UX and some categories.
+        *After teacher rate the project the mail is send to the team lead with the information of rating teacher given to that along with the categories.
+
+    4)Rated projects
+        *All rated projects which are evaluted by teacher are in this page
+    
+    5)Team lead data
+        *The all team lead data with email and the login credentials are stored here for the information.
+        *this is available in year wise
+   
+    6)Academic management
+         *In this page we can crete years,sections and teams.
+         * The flow year is available inside this year we have many sections and inside this sections we have teams and every team has a team lead.
+         *So we can create the teams using this flow.    
+         *And every year,section and tam has a delete option individually.
+
+    (      if teacher delete the team the lead information also automatically delete.
+            if teacher selete the section all teams related to thet section are delete along with the team lead information
+            if the teache delete a year the section,teams and teams leads date in that year is automativally deleted
+           and ask for the confirmation while deleting anyone.    )
+                                                                                                        
+===================================================================================
