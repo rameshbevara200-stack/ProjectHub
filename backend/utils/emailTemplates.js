@@ -133,6 +133,65 @@ const studentTeamRegistrationTemplate = ({ teamLeadName, teamName, yearName, sec
   `;
 };
 
+const facultyInvitationTemplate = ({ facultyName, email, password, invitedBy, department, portalUrl }) => {
+  return `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <style>
+      body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f8; margin: 0; padding: 20px; }
+      .container { max-width: 600px; background: #ffffff; margin: 0 auto; border-radius: 4px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.08); border: 1px solid #e2dfd7; }
+      .header { background: #19323f; color: #ffffff; padding: 24px; text-align: center; }
+      .content { padding: 30px; color: #141719; line-height: 1.6; }
+      .card { background: #f8f7f4; border: 1px solid #e2dfd7; border-radius: 4px; padding: 16px; margin: 20px 0; }
+      .cred-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+      .label { font-weight: bold; color: #697077; }
+      .value { font-family: monospace; font-size: 15px; color: #141719; font-weight: bold; }
+      .btn { display: inline-block; background: #c85a32; color: #ffffff !important; padding: 12px 24px; text-decoration: none; border-radius: 2px; font-weight: bold; margin-top: 15px; text-transform: uppercase; font-size: 13px; letter-spacing: 0.05em; }
+      .footer { background: #f1efea; padding: 16px; text-align: center; font-size: 11px; color: #697077; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1 style="margin:0; font-size:20px; text-transform:uppercase; letter-spacing:0.08em;">College Project Hub</h1>
+        <p style="margin:5px 0 0; opacity:0.85; font-size:12px; font-family:monospace;">Faculty Evaluator Credentials</p>
+      </div>
+      <div class="content">
+        <p>Dear <strong>${facultyName}</strong>,</p>
+        <p>You have been enrolled as an authorized <strong>Faculty Evaluator</strong> on the College Project Hub by <strong>${invitedBy}</strong>.</p>
+        <p>You can now sign in to evaluate capstone projects, review student submissions, and manage academic cohorts.</p>
+        
+        <div class="card">
+          <div class="cred-row">
+            <span class="label">Department:</span>
+            <span class="value">${department}</span>
+          </div>
+          <div class="cred-row">
+            <span class="label">Login Email:</span>
+            <span class="value">${email}</span>
+          </div>
+          <div class="cred-row">
+            <span class="label">Initial Password:</span>
+            <span class="value" style="color: #c85a32;">${password}</span>
+          </div>
+        </div>
+
+        <p style="font-size: 13px; color: #697077;">Please log into the Faculty Portal below using these credentials:</p>
+        
+        <center>
+          <a href="${portalUrl || 'http://localhost:5173/teacher/login'}" class="btn">Access Faculty Portal</a>
+        </center>
+      </div>
+      <div class="footer">
+        Academic Faculty Directory • College Project Hub
+      </div>
+    </div>
+  </body>
+  </html>
+  `;
+};
+
 const evaluationResultTemplate = ({ teamLeadName, teamName, projectTitle, evaluation }) => {
   const { technicalApproach, idea, designThinking, uiUx, totalScore, feedback } = evaluation;
 
@@ -219,5 +278,6 @@ const evaluationResultTemplate = ({ teamLeadName, teamName, projectTitle, evalua
 module.exports = {
   teamLeadCredentialsTemplate,
   studentTeamRegistrationTemplate,
+  facultyInvitationTemplate,
   evaluationResultTemplate,
 };

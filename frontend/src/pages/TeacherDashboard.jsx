@@ -19,6 +19,8 @@ import {
   FolderTree,
   Users,
   Compass,
+  UserCheck,
+  Shield,
 } from 'lucide-react';
 
 const TeacherDashboard = () => {
@@ -71,6 +73,16 @@ const TeacherDashboard = () => {
     membersText: '',
   });
   const [formMsg, setFormMsg] = useState({ type: '', text: '' });
+
+  // Faculty Colleagues state
+  const [colleagues, setColleagues] = useState([]);
+  const [newColleague, setNewColleague] = useState({
+    name: '',
+    email: '',
+    password: '',
+    department: '',
+  });
+  const [colleagueMsg, setColleagueMsg] = useState({ type: '', text: '', loading: false });
 
   // Guard: Redirect to login if not logged in
   useEffect(() => {
@@ -131,6 +143,9 @@ const TeacherDashboard = () => {
         setYears(yrRes.data);
         setSections(secRes.data);
         setTeams(tmRes.data);
+      } else if (activeTab === 'faculty') {
+        const res = await api.get('/auth/teacher/colleagues');
+        setColleagues(res.data);
       }
     } catch (err) {
       console.error('Error fetching tab data:', err);
@@ -226,6 +241,39 @@ const TeacherDashboard = () => {
     }
   };
 
+  // Faculty Colleague Creation
+  const handleCreateColleague = async (e) => {
+    e.preventDefault();
+    setColleagueMsg({ type: '', text: '', loading: true });
+
+    if (newColleague.password.length < 6) {
+      setColleagueMsg({
+        type: 'error',
+        text: 'Initial password must be at least 6 characters long.',
+        loading: false,
+      });
+      return;
+    }
+
+    try {
+      const res = await api.post('/auth/teacher/colleagues', newColleague);
+      setColleagueMsg({
+        type: 'success',
+        text: res.data.message || 'Faculty colleague created and credentials dispatched!',
+        loading: false,
+      });
+      setNewColleague({ name: '', email: '', password: '', department: '' });
+      const updated = await api.get('/auth/teacher/colleagues');
+      setColleagues(updated.data);
+    } catch (err) {
+      setColleagueMsg({
+        type: 'error',
+        text: err.response?.data?.message || 'Failed to enroll faculty account',
+        loading: false,
+      });
+    }
+  };
+
   // Trigger Deletion Confirmation Modal
   const requestDelete = (type, item) => {
     let warningNote = '';
@@ -311,6 +359,7 @@ const TeacherDashboard = () => {
             { id: 'rated', label: 'Rated Archive', icon: Award },
             { id: 'leads', label: 'Team Lead Directory', icon: KeyRound },
             { id: 'academic', label: 'Academic Hierarchy', icon: FolderTree },
+            { id: 'faculty', label: 'Faculty Roster', icon: UserCheck },
           ].map((tab) => {
             const Icon = tab.icon;
             const isSelected = activeTab === tab.id;
@@ -333,7 +382,7 @@ const TeacherDashboard = () => {
       </div>
 
       {/* Filter Bar */}
-      {activeTab !== 'academic' && (
+      {activeTab !== 'academic' && activeTab !== 'faculty' && (
         <div className="bg-white p-4 border border-[#E2DFD7] flex flex-wrap items-center gap-3">
           <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#141719]">Filter by:</span>
           <select
@@ -939,6 +988,179 @@ const TeacherDashboard = () => {
                       <tr>
                         <td colSpan="6" className="p-8 text-center text-[#9AA1A9]">
                           No teams registered yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 7: FACULTY ROSTER */}
+      {activeTab === 'faculty' && (
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Enrollment Form */}
+            <div className="lg:col-span-1 bg-white border border-[#E2DFD7] p-6 space-y-5">
+              <div>
+                <h3 className="font-display text-sm uppercase tracking-widest font-bold text-[#141719] flex items-center space-x-2">
+                  <UserCheck className="w-4 h-4 text-[#C85A32]" />
+                  <span>Enroll New Faculty</span>
+                </h3>
+                <p className="text-xs text-[#697077] font-sans mt-1">
+                  Enrolled colleagues receive secure access credentials via automated institutional email notification.
+                </p>
+              </div>
+
+              {colleagueMsg.text && (
+                <div
+                  className={`p-3 text-xs font-mono border ${
+                    colleagueMsg.type === 'error'
+                      ? 'bg-red-50 text-red-700 border-red-200'
+                      : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                  }`}
+                >
+                  {colleagueMsg.text}
+                </div>
+              )}
+
+              <form onSubmit={handleCreateColleague} className="space-y-4">
+                <div>
+                  <label className="block text-[11px] font-mono uppercase tracking-wider text-[#697077] mb-1">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Prof. Jane Doe"
+                    value={newColleague.name}
+                    onChange={(e) => setNewColleague({ ...newColleague, name: e.target.value })}
+                    className="w-full px-3 py-2 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono text-[#141719] focus:outline-hidden focus:border-[#141719]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase tracking-wider text-[#697077] mb-1">
+                    Institutional Email *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="colleague@institution.edu"
+                    value={newColleague.email}
+                    onChange={(e) => setNewColleague({ ...newColleague, email: e.target.value })}
+                    className="w-full px-3 py-2 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono text-[#141719] focus:outline-hidden focus:border-[#141719]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase tracking-wider text-[#697077] mb-1">
+                    Department
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Computer Science & Engineering"
+                    value={newColleague.department}
+                    onChange={(e) => setNewColleague({ ...newColleague, department: e.target.value })}
+                    className="w-full px-3 py-2 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono text-[#141719] focus:outline-hidden focus:border-[#141719]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase tracking-wider text-[#697077] mb-1">
+                    Initial Temporary Password *
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    placeholder="Min 6 characters"
+                    value={newColleague.password}
+                    onChange={(e) => setNewColleague({ ...newColleague, password: e.target.value })}
+                    className="w-full px-3 py-2 bg-[#F8F7F4] border border-[#E2DFD7] text-xs font-mono text-[#141719] focus:outline-hidden focus:border-[#141719]"
+                  />
+                  <p className="text-[10px] text-[#9AA1A9] mt-1 font-mono">
+                    This password will be securely hashed and dispatched to the faculty member's inbox.
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={colleagueMsg.loading}
+                  className="w-full finisterre-btn-rust text-xs py-2.5 flex items-center justify-center space-x-2 disabled:opacity-50"
+                >
+                  <UserCheck className="w-3.5 h-3.5" />
+                  <span>{colleagueMsg.loading ? 'Enrolling & Sending Mail...' : 'Enroll Faculty Member'}</span>
+                </button>
+              </form>
+            </div>
+
+            {/* Faculty Directory Table */}
+            <div className="lg:col-span-2 bg-white border border-[#E2DFD7] overflow-hidden flex flex-col">
+              <div className="p-5 border-b border-[#E2DFD7] bg-[#F8F7F4] flex justify-between items-center">
+                <div>
+                  <h2 className="font-display text-xs uppercase tracking-widest font-bold text-[#141719]">
+                    Faculty Evaluator Directory ({colleagues.length})
+                  </h2>
+                  <p className="text-[11px] text-[#697077] mt-1 font-mono">
+                    Authorized faculty members with grading, evaluation, and management privileges.
+                  </p>
+                </div>
+                <button
+                  onClick={loadTabData}
+                  className="p-1.5 text-[#697077] hover:text-[#141719] border border-[#E2DFD7] bg-white transition"
+                  title="Refresh Roster"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div className="overflow-x-auto flex-1">
+                <table className="w-full text-left text-xs font-mono text-[#484F56]">
+                  <thead className="bg-[#F8F7F4] text-[10px] uppercase font-bold tracking-widest text-[#697077] border-b border-[#E2DFD7]">
+                    <tr>
+                      <th className="p-4">Faculty Member</th>
+                      <th className="p-4">Email</th>
+                      <th className="p-4">Department</th>
+                      <th className="p-4">Access Role</th>
+                      <th className="p-4 text-right">Joined</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#E2DFD7]">
+                    {colleagues.map((colleague) => (
+                      <tr key={colleague._id} className="hover:bg-[#F8F7F4]/80">
+                        <td className="p-4">
+                          <div className="font-bold text-[#141719] font-sans text-sm flex items-center space-x-2">
+                            <span>{colleague.name}</span>
+                            {teacher?.email === colleague.email && (
+                              <span className="text-[9px] font-mono px-1.5 py-0.5 bg-[#141719] text-white uppercase font-bold tracking-wider">
+                                You
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-4 text-[#C85A32]">{colleague.email}</td>
+                        <td className="p-4 text-[#141719]">
+                          {colleague.department || <span className="text-[#9AA1A9]">General Faculty</span>}
+                        </td>
+                        <td className="p-4">
+                          <span className="inline-flex items-center space-x-1 px-2 py-0.5 bg-[#EFECE6] border border-[#E2DFD7] text-[#141719] text-[10px] font-bold">
+                            <Shield className="w-3 h-3 text-[#C85A32]" />
+                            <span>EVALUATOR</span>
+                          </span>
+                        </td>
+                        <td className="p-4 text-right text-[11px] text-[#697077]">
+                          {colleague.createdAt ? new Date(colleague.createdAt).toLocaleDateString() : 'Active'}
+                        </td>
+                      </tr>
+                    ))}
+                    {colleagues.length === 0 && (
+                      <tr>
+                        <td colSpan="5" className="p-10 text-center text-[#9AA1A9]">
+                          No faculty members loaded.
                         </td>
                       </tr>
                     )}

@@ -5,7 +5,7 @@ const Team = require('../models/Team');
 const Year = require('../models/Year');
 const Section = require('../models/Section');
 const { sendEmail } = require('../config/mailer');
-const { studentTeamRegistrationTemplate } = require('../utils/emailTemplates');
+const { studentTeamRegistrationTemplate, facultyInvitationTemplate } = require('../utils/emailTemplates');
 
 const generateToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_SECRET || 'secret', {
@@ -14,28 +14,43 @@ const generateToken = (payload) => {
 };
 
 /**
- * @desc   Register or initialize teacher
- * @route  POST /api/auth/teacher/register
+ * @desc   Check if faculty initial setup is needed (i.e. zero faculty exist)
+ * @route  GET /api/auth/teacher/setup-status
  * @access Public
  */
-const registerTeacher = async (req, res) => {
+const getFacultySetupStatus = async (req, res) => {
   try {
-    const { name, email, password, department } = req.body;
+    const count = await Teacher.countDocuments();
+    res.json({ needsInitialSetup: count === 0 });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Please provide all required fields' });
+/**
+ * @desc   Initial master faculty setup (ONLY allowed when 0 faculty accounts exist)
+ * @route  POST /api/auth/teacher/initial-setup
+ * @access Public (Locked after 1st account)
+ */
+const initialFacultySetup = async (req, res) => {
+  try {
+    const count = await Teacher.countDocuments();
+    if (count > 0) {
+      return res.status(403).json({
+        message: 'Initial faculty setup is completed. New faculty accounts can only be created from inside the Faculty Portal.',
+      });
     }
 
-    const teacherExists = await Teacher.findOne({ email: email.toLowerCase() });
-    if (teacherExists) {
-      return res.status(400).json({ message: 'Teacher with this email already exists' });
+    const { name, email, password, department } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Name, email, and password are required.' });
     }
 
     const teacher = await Teacher.create({
-      name,
-      email: email.toLowerCase(),
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
       password,
-      department: department || 'Engineering Faculty',
+      department: department ? department.trim() : 'Computer Science & Engineering',
     });
 
     res.status(201).json({
@@ -44,7 +59,84 @@ const registerTeacher = async (req, res) => {
       email: teacher.email,
       department: teacher.department,
       token: generateToken({ id: teacher._id, role: 'teacher' }),
+      message: 'Master faculty administrator account initialized.',
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * @desc   Create a Faculty Colleague (Internal: Protected by logged-in Faculty)
+ * @route  POST /api/auth/teacher/colleagues
+ * @access Private (Teacher Only)
+ */
+const createFacultyColleague = async (req, res) => {
+  try {
+    const { name, email, password, department } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Faculty Name, Email, and Initial Password are required.' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
+    }
+
+    const existing = await Teacher.findOne({ email: email.toLowerCase().trim() });
+    if (existing) {
+      return res.status(400).json({ message: `A faculty account with email '${email}' already exists.` });
+    }
+
+    const colleague = await Teacher.create({
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      password,
+      department: department ? department.trim() : 'Computer Science & Engineering',
+    });
+
+    // Send invitation email with login credentials
+    const portalUrl = `${req.protocol}://${req.get('host').replace(':5000', ':5173')}/teacher/login`;
+    sendEmail({
+      to: email.toLowerCase().trim(),
+      subject: 'College Project Hub - Faculty Evaluator Credentials',
+      html: facultyInvitationTemplate({
+        facultyName: name.trim(),
+        email: email.toLowerCase().trim(),
+        password,
+        invitedBy: req.teacher?.name || 'Faculty Administration',
+        department: colleague.department,
+        portalUrl,
+      }),
+      text: `Hello ${name},\n\nYou have been enrolled as a Faculty Evaluator by ${req.teacher?.name}.\nLogin Email: ${email}\nInitial Password: ${password}\n\nLogin at: ${portalUrl}`,
+    });
+
+    res.status(201).json({
+      message: `Faculty account created successfully for ${name}. Credentials have been dispatched to ${email}.`,
+      colleague: {
+        _id: colleague._id,
+        name: colleague.name,
+        email: colleague.email,
+        department: colleague.department,
+        createdAt: colleague.createdAt,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * @desc   Get list of all faculty colleagues
+ * @route  GET /api/auth/teacher/colleagues
+ * @access Private (Teacher Only)
+ */
+const getFacultyColleagues = async (req, res) => {
+  try {
+    const facultyList = await Teacher.find()
+      .select('name email department createdAt')
+      .sort({ createdAt: 1 });
+    res.json(facultyList);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -271,7 +363,10 @@ const registerStudentTeam = async (req, res) => {
 };
 
 module.exports = {
-  registerTeacher,
+  getFacultySetupStatus,
+  initialFacultySetup,
+  createFacultyColleague,
+  getFacultyColleagues,
   loginTeacher,
   loginTeamLead,
   registerStudentTeam,
